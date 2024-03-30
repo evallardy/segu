@@ -1,0 +1,38 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% block contenido %}
+<h1>Listado de Empleados</h1>
+<a class="btn btn-info" href="{% url 'crear_empleado' %}">Crear Empleado</a>
+{% if empleados %}
+<table>
+    <thead>
+        <tr>
+            <th>codigo</th>
+            <th>Nombre</th>
+            <th>CURP</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for empleado in empleados %}
+        <tr>
+            <td>{{empleado.codigo|default_if_none:""}}</td>
+            <td>{{empleado.paterno}} {{empleado.materno|default_if_none:""}}, {{empleado.nombre}}</td>
+            <td>{{empleado.curp}}</td>
+            <td><a href="{% url 'modificar_empleado' empleado.pk %}">
+                <img src="{% static 'core/img/editar.svg' %}" alt="">
+            </a></td>
+            <td><a href="{% url 'confirmar_eliminar' empleado.pk %}">
+                <img src="{% static 'core/img/eliminar.svg' %}" alt="">
+            </a></td>
+            <td><a href="{% url 'consulta_empleado' empleado.pk %}">
+                <img src="{% static 'core/img/consultar.svg' %}" alt="">
+            </a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>    
+{% endif %}
+{% endblock %}

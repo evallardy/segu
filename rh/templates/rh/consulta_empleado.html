@@ -1,0 +1,40 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block contenido %}
+<h1>Detalle del Empleado</h1>
+<table class="table table-striped">
+    <tbody>
+        <tr>
+            <td style="width: 20%;">Nombre:</td>
+            <td>{{ empleado.nombre }}</td>
+        </tr>
+        <tr>
+            <td>Paterno:</td>
+            <td>{{ empleado.paterno }}</td>
+        </tr>
+        <tr>
+            <td>Materno:</td>
+            <td>{{ empleado.materno }}</td>
+        </tr>
+        <tr>
+            <td>RFC:</td>
+            <td>{{ empleado.rfc }}</td>
+        </tr>
+        <tr>
+            <td>CURP:</td>
+            <td>{{ empleado.curp }}</td>
+        </tr>
+        <tr>
+            <td>Género:</td>
+            <td>{{ empleado.get_genero_display }}</td>
+        </tr>
+        <tr>
+            <td>Estatus:</td>
+            <td>{{ empleado.get_estatus_display }}</td>
+        </tr>
+    </tbody>
+</table>
+<a class="btn btn-info" href="{% url 'listar_empleados' %}">
+    <img src="{% static 'core/img/regresar.svg' %}">
+</a>
+{% endblock %}

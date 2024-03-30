@@ -1,0 +1,93 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'core/img/favicon.jpg' %}">
+  <!-- FUENTES DE GOOGLE FONT -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i" rel="stylesheet">
+  <!-- ARCHIVOS CSS BOOTSTRAP -->
+  <link type="text/css" rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
+  <!-- ARCHIVOS CSS PERSONALIZADOS -->
+  <link type="text/css" rel="stylesheet" href="{% static 'core/css/estilos.css' %}">
+  <!-- JavaScript Bundle with Popper -->
+  <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
+  <title>Pleyatec</title>
+  <script src="{% static 'core/js/jquery.min.js' %}"></script>
+  <script src="{% static 'core/js/jquery-3.3.1.min.js' %}"></script>
+  <script src="{% static 'core/js/popper.min.js' %}"></script>
+  <script src="{% static 'core/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'core/js/funciones.js' %}"></script>
+  {% block css %}
+
+  {% endblock %}
+</head>
+
+<body>
+  <!-- SECCION NAVEGACIÓN-->
+  <nav class="navbar navbar-dark bg-dark navbar-expand-md fixed-top">
+    <div class="container">
+      <a href="#" class="navbar-brand">
+        <img src="{% static 'core/img/logo.png' %}" alt="" style="width: 43px;">
+      </a>
+      <a href="{% url 'index' %}" class="navbar-brand">
+        <strong>GRUPO AGUILA BICEFALA DE TRANSPORTES S.A. de C.V</strong>
+      </a>
+
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#menu-principal"
+        aria-controls="menu-principal" aria-expanded="false" aria-label="Desplegar menú de navegación">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="menu-principal">
+        <ul class="navbar-nav ml-auto">
+          {% if user.is_authenticated %}
+          <li class="nav-item"><a href="#" class="nav-link active">Asignaciones</a></li>
+          <li class="nav-item"><a href="{% url 'listar_empleados'%}" class="nav-link">Recursos humanos</a></li>
+          <li class="nav-item"><a href="#" class="nav-link">Clientes</a></li>
+          <li class="nav-item"><a href="#" class="nav-link">{{ user.name }}</a></li>
+          <li class="nav-item"><a href="{% url 'logout'%}" class="nav-link">Cerrar</a></li>
+          {% else %}
+          <li class="nav-item"><a href="{% url 'login'%}" class="nav-link">Entrar</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <section class="py-4 mt-5">
+    <div class="container">
+      <div class="row">
+        {% block contenido %}
+
+        {% endblock %}
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCION PIE DE PÁGINA -->
+  <footer class="pie-de-pagina text-center text-md-right bg-dark text-white fixed-bottom">
+    <div class="container">
+      <p class="m-0 py-3">Copyright © 2024. Todos los derechos reservados. </p>
+    </div>
+  </footer>
+  <script>
+    $(document).ready(function () {
+
+      {% block docred %}
+
+      {% endblock %}
+    });
+    {% block secjs %}
+
+    {% endblock %}
+  </script>
+  <!-- ARCHIVOS BOOTSTRAP JAVASCRIPT -->
+  {% block bljs %}
+
+  {% endblock %}
+</body>
+
+</html>
