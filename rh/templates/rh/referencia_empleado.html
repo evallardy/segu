@@ -1,0 +1,224 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block css %}
+<title>Referencias empleado</title>
+{% endblock %}
+{% block contenido %}
+<form id="formaReferencias" method="post" action="{% url 'referencia_empleado' pk %}">
+    {% csrf_token %}
+    <div>
+        <h1>Lista de referencias</h1>
+        <h4 style="font-style: italic;">{{ nombre }}</h4>
+        <hr>
+        <div class="form-group col-4" id="gpo_btn_cliente">
+            <button type="button" class="btn btn-info" id="btn-agrega">
+                Agrega referencia
+            </button>
+        </div>
+        <table class="table table-striped" id="tabla_referencias">
+            <thead>
+                <tr>
+                    <th class="col-1"></th>
+                    <th class="col-1"></th>
+                    <th>Tipo</th>
+                    <th>Nombre</th>
+                    <th>fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for referencia in datos.referencia %}
+                <tr>
+                    <td><img class="btnEliminarFila" src="{% static 'core/img/eliminar.svg' %}" alt=""></td>
+                    <td><img class="btnEditarFila" src="{% static 'core/img/editar.svg' %}" alt=""></td>
+                    <td>{{ referencia.tipo }}</td>
+                    <td>{{ referencia.nombre }}</td>
+                    <td>{{ referencia.fecha }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <hr>
+        <div class="row justify-content-center">
+            <button class="btn btn-success col-4" type="submit">
+                <img src="{% static 'core/img/guardar.svg' %}" alt="">
+            </button>
+            <a class="btn btn-info col-4 info1" href="{% url 'modificar_empleado' pk %}">
+                <img src="{% static 'core/img/regresar.svg' %}" alt="">
+            </a>
+        </div>
+
+    </div>
+    <input type="text" name="datosTabla" id="id_datosTabla" hidden>
+</form>
+<div class="modal fade" id="referencias_empleado" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">        
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: darkgrey;">
+            <div class="modal-header">
+                <h4 class="encabezados" style="font-weight: bold;">Referencia</h4>
+                <button type="button" class="btn btn-info" data-dismiss="modal" title="Cancelar"
+                    id="btn-cancela">
+                    <img src="{% static 'core/img/regresar.svg' %}" width="20" />
+                </button>
+                <button type="button" class="btn btn-success btn-agrega-tabla" title="Agregar"
+                    id="btn-guarda">
+                    <img src="{% static 'core/img/autoriza.svg' %}" width="20" />
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input type="text" name="editar" id="id_editar" class="form-control" hidden>
+                    <div class="form-group col-6">
+                        <strong>Tipo:</strong>
+                        <select name="tipo" id="id_tipo" class="form-control">
+                            {% for id, tipo in tipo_referencia %}
+                            <option value="{{ id }}">{{ tipo }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="tipo_can" id="id_tipo_can" class="form-control" hidden>
+                    </div>
+                    <div class="form-group col-12">
+                        <strong>Nombre:</strong>
+                        <input type="text" name="nombre" id="id_nombre" class="form-control">
+                        <input type="text" name="nombre_can" id="id_nombre_can" class="form-control" hidden>
+                    </div>
+                    <div class="form-group col-6">
+                        <strong>Fecha:</strong>
+                        <input type="date" name="fecha" id="id_fecha" class="form-control">
+                        <input type="text" name="fecha_can" id="id_fecha_can" class="form-control" hidden>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<script>
+    {% block docred %}
+    $('#formaReferencias').submit(function(event) {
+        // Evitar el envío del formulario por defecto
+        event.preventDefault();
+
+        // Obtener los datos de la tabla y serializarlos como JSON
+        var datosTabla = obtenerDatosTabla();
+        var datosJson = JSON.stringify(datosTabla);
+
+        // Establecer los datos JSON en el campo oculto del formulario
+        $('#id_datosTabla').val(datosJson);
+
+        // Enviar el formulario
+        this.submit();
+    });
+    function obtenerDatosTabla() {
+        var datos = [];
+        $('#tabla_referencias tbody tr').each(function() {
+            var fila = {};
+            $(this).find('td').each(function(index) {
+                if (index === 0 || index == 1 ) return; // Saltar la primera columna (botón de eliminar)
+                if (index == '2') {
+                    fila['tipo'] = $(this).text();
+                } else if (index == '3') {
+                    fila['nombre'] = $(this).text();
+                } else if (index == '4') {
+                    fila['fecha'] = $(this).text();
+                }
+            });
+            datos.push(fila);
+        });
+        return datos;
+    }
+    $('#btn-agrega').on('click', function () {
+        $('#id_editar').val('Nuevo');
+        $('#id_tipo, #id_tipo_can, #id_nombre, #id_nombre_can, #id_fecha, #id_fecha_can').val('');
+        $('#referencias_empleado').modal('show');
+    }); 
+    $('#btn-guarda').on('click', function () {
+        $('#id_editar').val('Nuevo');
+        $('#referencias_empleado').modal('hide');
+    }); 
+    $('.btn-agrega-tabla').on('click', function () {
+
+        if ($('#id_editar').val() == 'Edita') {
+            // Captura de valores de los campos de la ventana modal
+            var tipo = $('#id_tipo_can').val();
+            var nombre = $('#id_nombre_can').val();
+            var fecha = $('#id_fecha_can').val();
+        } else if ($('#id_editar').val() == 'Nuevo') {
+            // Captura de valores de los campos de la ventana modal
+            var tipo = $('#id_tipo option:selected').text();
+            var nombre = $('#id_nombre').val();
+            var fecha = $('#id_fecha').val();
+        } else {
+            $('#referencias_empleado').modal('hide');
+            return;
+        }
+
+        if (!tipo || !nombre || !fecha) {
+            alert('Por favor, ponga todos los datos.');
+            return;
+        }
+
+        // Creación de la nueva fila de la tabla
+        direccion_imagen_elimina = "{% static 'core/img/eliminar.svg' %}";
+        direccion_imagen_edita = "{% static 'core/img/editar.svg' %}";
+        var newRow = '<tr>' +
+            '<td><img class="btnEliminarFila" src="' + direccion_imagen_elimina + '" alt=""></td>' +  // Botón de eliminar en la primera columna
+            '<td><img class="btnEditarFila" src="' + direccion_imagen_edita + '" alt=""></td>' +  // Botón de editar en la primera columna
+            '<td>' + tipo + '</td>' +
+            '<td>' + nombre + '</td>' +
+            '<td>' + fecha + '</td>' +
+            '</tr>';
+
+        // Agregar la nueva fila al final de la tabla
+        $('#tabla_referencias tbody').append(newRow);
+
+        // Limpiar los campos de la ventana modal
+        $('#id_tipo, #id_nombre, #id_fecha').val('');
+        $('#id_tipo_can, #id_nombre_can, #id_fecha_can').val('');
+
+        // Ocultar la ventana modal
+        $('#referencias_empleado').modal('hide');
+    });
+    $('#btn-cancela').on('click', function () {
+        if ($('#id_editar').val() == 'Edita') {
+            $('.btn-agrega-tabla').click();
+        }
+        $('#referencias_empleado').modal('hide');
+    });
+    $('#tabla_referencias').on('click', '.btnEliminarFila', function () {
+        // Obtener la fila que contiene el botón en el que se hizo clic
+        $(this).closest('tr').remove();
+    });
+    $('#tabla_referencias').on('click', '.btnEditarFila', function () {
+        // Obtener la fila que contiene el botón en el que se hizo clic
+        var fila = $(this).closest('tr');
+        $('#id_editar').val('Edita');
+        fila.find('td').each(function(index) {
+            if (index === 0 || index == 1 ) return; // Saltar la primera columna (botón de eliminar)
+            if (index == '2') {
+                var texto_tipo = $(this).text();
+                // Seleccionar la opción en el select basada en el texto
+                $('#id_tipo option').each(function() {
+                    if ($(this).text() === texto_tipo) {
+                        $(this).prop('selected', true);
+                    }
+                });
+                campo_tipo_can = $('#id_tipo_can');
+                campo_tipo_can.val($(this).text());
+                return; // Salir del bucle each
+            } else if (index == '3') {
+                campo_nombre = $('#id_nombre');
+                campo_nombre_can = $('#id_nombre_can');
+            } else if (index == '4') {
+                campo_nombre = $('#id_fecha');
+                campo_nombre_can = $('#id_fecha_can');
+            }
+            campo_nombre.val($(this).text());
+            campo_nombre_can.val($(this).text());
+        });
+        // Eliminar la fila
+        fila.remove();
+        $('#referencias_empleado').modal('show');
+    });
+    {% endblock %}
+</script>

@@ -1,16 +1,52 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Confirmar Eliminación</title>
-</head>
-<body>
+{% extends "core/base.html" %}
+{% load static %}
+{% block css %}
+<title>Elimina empleado</title>
+{% endblock %}
+{% block contenido %}
     <h1>Confirmar Eliminación</h1>
-    <p>¿Estás seguro de que deseas eliminar al empleado "{{ empleado.nombre }}"?</p>
+    <p class="text-danger"><strong>¿ Estás seguro de que deseas eliminar al empleado ?</strong></p>
+    <table class="table table-striped">
+        <tbody>
+            <tr>
+                <td style="width: 20%;">Nombre:</td>
+                <td>{{ empleado.nombre }}</td>
+            </tr>
+            <tr>
+                <td>Paterno:</td>
+                <td>{{ empleado.paterno }}</td>
+            </tr>
+            <tr>
+                <td>Materno:</td>
+                <td>{{ empleado.materno }}</td>
+            </tr>
+            <tr>
+                <td>RFC:</td>
+                <td>{{ empleado.rfc }}</td>
+            </tr>
+            <tr>
+                <td>CURP:</td>
+                <td>{{ empleado.curp }}</td>
+            </tr>
+            <tr>
+                <td>Género:</td>
+                <td>{{ empleado.get_genero_display }}</td>
+            </tr>
+            <tr>
+                <td>Estatus:</td>
+                <td>{{ empleado.get_estatus_display }}</td>
+            </tr>
+        </tbody>
+    </table>
     <form method="post">
         {% csrf_token %}
-        <a href="{% url 'eliminar_empleado' empleado.id %}">Confirmar</a>
-        <a href="{% url 'listar_empleados' %}">Cancelar</a>
+        <div class="row">
+            <a class="btn btn-danger col-6" href="{% url 'eliminar_empleado' empleado.id %}">
+                <img src="{% static 'core/img/eliminar.svg' %}" alt="">
+            </a>
+            <a class="btn btn-info col-6" href="{% url 'listar_empleados' %}">
+                <img src="{% static 'core/img/regresar.svg' %}" alt="">
+            </a>
+        </div>
     </form>
-</body>
-</html>
+{% endblock %}

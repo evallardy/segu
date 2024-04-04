@@ -1,0 +1,266 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block css %}
+<title>Escolaridad empleado</title>
+{% endblock %}
+{% block contenido %}
+<form id="formaEscolaridad" method="post" action="{% url 'escolaridad_empleado' pk %}">
+    {% csrf_token %}
+    <div>
+        <h1>Lista de escuelas</h1>
+        <h4 style="font-style: italic;">{{ nombre }}</h4>
+        <hr>
+        <div class="form-group col-4" id="gpo_btn_cliente">
+            <button type="button" class="btn btn-info" id="btn-agrega">
+                Agrega escuela
+            </button>
+        </div>
+        <table class="table table-striped" id="tabla_escuelas">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Escuela</th>
+                    <th>Nombre</th>
+                    <th class="text-center">Inicia</th>
+                    <th class="text-center">Termina</th>
+                    <th class="text-center">Terminada</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for escuela in datos.escolaridad %}
+                <tr>
+                    <td><img class="btnEliminarFila" src="{% static 'core/img/eliminar.svg' %}" alt=""></td>
+                    <td><img class="btnEditarFila" src="{% static 'core/img/editar.svg' %}" alt=""></td>
+                    <td>{{ escuela.tipo }}</td>
+                    <td>{{ escuela.nombre }}</td>
+                    <td class="text-center">{{ escuela.fecha_inicial }}</td>
+                    <td class="text-center">{{ escuela.fecha_final }}</td>
+                    <td class="text-center">{{ escuela.terminada }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <hr>
+        <div class="row justify-content-center">
+            <button class="btn btn-success col-4" type="submit">
+                <img src="{% static 'core/img/guardar.svg' %}" alt="">
+            </button>
+            <a class="btn btn-info col-4 info1" href="{% url 'modificar_empleado' pk %}">
+                <img src="{% static 'core/img/regresar.svg' %}" alt="">
+            </a>
+        </div>
+
+    </div>
+    <input type="text" name="datosTabla" id="id_datosTabla" hidden>
+</form>
+<div class="modal fade" id="escuelas_empleado" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" 
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: darkgrey;">
+            <div class="modal-header">
+                <h4 class="encabezados" style="font-weight: bold;">Nuevo escuela</h4>
+                <button type="button" class="btn btn-info1" data-dismiss="modal" title="Cancelar" hidden>
+                    <img src="{% static 'core/img/regresar.svg' %}" width="20" />
+                </button>
+                <button type="button" class="btn btn-info" data-dismiss="modal" title="Cancelar"
+                    id="btn-cancela">
+                    <img src="{% static 'core/img/regresar.svg' %}" width="20" />
+                <button type="button" class="btn btn-success btn-agrega-tabla" title="Agregar"
+                    id="btn-guarda">
+                    <img src="{% static 'core/img/autoriza.svg' %}" width="20" />
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input type="text" name="editar" id="id_editar" class="form-control" hidden>
+                    <div class="form-group col-6">
+                        <strong>Escuela:</strong>
+                        <select name="tipo" id="id_tipo" class="form-control">
+                            {% for id, escuela in escolaridad %}
+                            <option value="{{ id }}">{{ escuela }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="tipo_can" id="id_tipo_can" class="form-control" hidden>
+                    </div>
+                    <div class="form-group col-12">
+                        <strong>Nombre:</strong>
+                        <input type="text" name="nombre" id="id_nombre" class="form-control">
+                        <input type="text" name="nombre_can" id="id_nombre_can" class="form-control" hidden>
+                    </div>
+                    <div class="form-group col-4">
+                        <strong>Fecha inicial:</strong>
+                        <input type="date" name="fecha_inicial" id="id_fecha_inicial" class="form-control">
+                        <input type="text" name="fecha_inicial_can" id="id_fecha_inicial_can" class="form-control" hidden>
+                    </div>
+                    <div class="form-group col-4">
+                        <strong>Fecha final:</strong>
+                        <input type="date" name="fecha_final" id="id_fecha_final" class="form-control">
+                        <input type="text" name="fecha_final_can" id="id_fecha_final_can" class="form-control" hidden>
+                    </div>
+                    <div class="form-group col-2">
+                        <strong>Terminada:</strong>
+                        <select name="terminada" id="id_terminada" class="form-control">
+                            {% for id, opcion in si_no %}
+                            <option value="{{ id }}">{{ opcion }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="terminada_can" id="id_terminada_can" class="form-control" hidden>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<script>
+    {% block docred %}
+    $('#formaEscolaridad').submit(function (event) {
+        // Evitar el envío del formulario por defecto
+        event.preventDefault();
+
+        // Obtener los datos de la tabla y serializarlos como JSON
+        var datosTabla = obtenerDatosTabla();
+        var datosJson = JSON.stringify(datosTabla);
+
+        // Establecer los datos JSON en el campo oculto del formulario
+        $('#id_datosTabla').val(datosJson);
+
+        // Enviar el formulario
+        this.submit();
+    });
+    function obtenerDatosTabla() {
+        var datos = [];
+        $('#tabla_escuelas tbody tr').each(function () {
+            var fila = {};
+            $(this).find('td').each(function (index) {
+                if (index == 0 || index == 1) return; // Saltar la primera columna (botón de eliminar y editar)
+                if (index == 2) {
+                    fila['tipo'] = $(this).text();
+                } else if (index == 3) {
+                    fila['nombre'] = $(this).text();
+                } else if (index == 4) {
+                    fila['fecha_inicial'] = $(this).text();
+                } else if (index == 5) {
+                    fila['fecha_final'] = $(this).text();
+                } else {
+                    fila['terminada'] = $(this).text();
+                }
+            });
+            datos.push(fila);
+        });
+        return datos;
+    }
+    $('#btn-agrega').on('click', function () {
+        var vacio = '';
+        $('#id_editar').val('Nuevo');
+        $('#id_tipo, #id_nombre, #id_fecha_inicial, #id_fecha_final, #id_terminada').val(vacio);
+        $('#escuelas_empleado').modal('show');
+    });
+    $('#btn-guarda').on('click', function () {
+        $('#id_editar').val('Nuevo');
+    });
+    $('.btn-agrega-tabla').on('click', function () {
+
+        if ($('#id_editar').val() == 'Edita') {
+            // Captura de valores de los campos de la ventana modal
+            var tipo = $('#id_tipo_can').val();
+            var nombre = $('#id_nombre_can').val();
+            var fecha_inicial = $('#id_fecha_inicial_can').val();
+            var fecha_final = $('#id_fecha_final_can').val();
+            var terminada = $('#id_terminada_can').val();
+        } else if ($('#id_editar').val() == 'Nuevo') {
+            var tipo = $('#id_tipo option:selected').text();
+            var nombre = $('#id_nombre').val();
+            var fecha_inicial = $('#id_fecha_inicial').val();
+            var fecha_final = $('#id_fecha_final').val();
+            var terminada = $('#id_terminada option:selected').text();
+        } else {
+            $('#escuelas_empleado').modal('hide');
+            return;
+        }
+
+        if (!tipo || !nombre || !terminada) {
+            alert('Por favor, complete todos los campos.');
+            return;
+        }
+
+        // Creación de la nueva fila de la tabla
+        direccion_imagen_elimina = "{% static 'core/img/eliminar.svg' %}";
+        direccion_imagen_edita = "{% static 'core/img/editar.svg' %}";
+        var newRow = '<tr>' +
+            '<td><img class="btnEliminarFila" src="' + direccion_imagen_elimina + '" alt=""></td>' +  // Botón de eliminar en la primera columna
+            '<td><img class="btnEditarFila" src="' + direccion_imagen_edita + '" alt=""></td>' +  // Botón de editar en la primera columna
+            '<td>' + tipo + '</td>' +
+            '<td>' + nombre + '</td>' +
+            '<td class="text-center">' + fecha_inicial + '</td>' +
+            '<td class="text-center">' + fecha_final + '</td>' +
+            '<td class="text-center">' + terminada + '</td>' +
+            '</tr>';
+
+        // Agregar la nueva fila al final de la tabla
+        $('#tabla_escuelas tbody').append(newRow);
+
+        // Limpiar los campos de la ventana modal
+        $('#id_tipo, #id_nombre, #id_fecha_inicial, #id_fecha_final, #id_terminada').val('');
+        $('#id_tipo_can, #id_nombre_can, #id_fecha_inicial_can, #id_fecha_final_can, #id_terminada_can').val('');
+
+        $('#escuelas_empleado').modal('hide');
+    });
+    $('#btn-cancela').on('click', function () {
+        if ($('#id_editar').val() == 'Edita') {
+            $('.btn-agrega-tabla').click();
+        }
+        $('#escuelas_empleado').modal('hide');
+    });
+    $('#tabla_escuelas').on('click', '.btnEliminarFila', function () {
+        // Eliminar fila al hacer clic en el botón de eliminar
+        $(this).closest('tr').remove();
+    });
+    $('#tabla_escuelas').on('click', '.btnEditarFila', function () {
+        // Obtener la fila que contiene el botón en el que se hizo clic
+        var fila = $(this).closest('tr');
+        $('#id_editar').val('Edita');
+        fila.find('td').each(function (index) {
+            if (index === 0 || index == 1) return; // Saltar la primera columna (botón de eliminar)
+            if (index == '2') {
+                var texto_tipo = $(this).text();
+                // Seleccionar la opción en el select basada en el texto
+                $('#id_tipo option').each(function () {
+                    if ($(this).text() === texto_tipo) {
+                        $(this).prop('selected', true);
+                    }
+                });
+                campo_tipo_can = $('#id_tipo_can');
+                campo_tipo_can.val($(this).text());
+                return; // Salir del bucle each
+            } else if (index == '3') {
+                campo_nombre = $('#id_nombre');
+                campo_nombre_can = $('#id_nombre_can');
+            } else if (index == '4') {
+                campo_nombre = $('#id_fecha_inicial');
+                campo_nombre_can = $('#id_fecha_inicial_can');
+            } else if (index == '5') {
+                campo_nombre = $('#id_fecha_final');
+                campo_nombre_can = $('#id_fecha_final_can');
+            } else {
+                var texto_terminada = $(this).text();
+                // Seleccionar la opción en el select basada en el texto
+                $('#id_terminada option').each(function () {
+                    if ($(this).text() === texto_terminada) {
+                        $(this).prop('selected', true);
+                    }
+                });
+                campo_nombre_can = $('#id_terminada_can');
+                campo_nombre_can.val($(this).text());
+                return; // Salir del bucle each
+            }
+            campo_nombre.val($(this).text());
+            campo_nombre_can.val($(this).text());
+        });
+        // Eliminar la fila
+        fila.remove();
+        $('#escuelas_empleado').modal('show');
+    });
+    {% endblock %}
+</script>

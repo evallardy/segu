@@ -1,0 +1,253 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block css %}
+<title>Familiares empleado</title>
+{% endblock %}
+{% block contenido %}
+<form id="formaFamiliares" method="post" action="{% url 'familia_empleado' pk %}">
+    {% csrf_token %}
+    <div>
+        <h1>Lista de familiares</h1>
+        <h4 style="font-style: italic;">{{ nombre }}</h4>
+        <hr>
+        <div class="form-group col-4" id="gpo_btn_cliente">
+            <button type="button" class="btn btn-info" id="btn-agrega">
+                Agrega familiar
+            </button>
+        </div>
+        <table class="table table-striped" id="tabla_familiares">
+            <thead>
+                <tr>
+                    <th class="col-1"></th>
+                    <th class="col-1"></th>
+                    <th>Parentezco</th>
+                    <th>Nombre</th>
+                    <th>Edad</th>
+                    <th>Vivo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for familiar in datos.familia %}
+                <tr>
+                    <td><img class="btnEliminarFila" src="{% static 'core/img/eliminar.svg' %}" alt=""></td>
+                    <td><img class="btnEditarFila" src="{% static 'core/img/editar.svg' %}" alt=""></td>
+                    <td>{{ familiar.parentezco }}</td>
+                    <td>{{ familiar.nombre }}</td>
+                    <td>{{ familiar.edad }}</td>
+                    <td>{{ familiar.vive }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <hr>
+        <div class="row justify-content-center">
+            <button class="btn btn-success col-4" type="submit">
+                <img src="{% static 'core/img/guardar.svg' %}" alt="">
+            </button>
+            <a class="btn btn-info col-4 info1" href="{% url 'modificar_empleado' pk %}">
+                <img src="{% static 'core/img/regresar.svg' %}" alt="">
+            </a>
+        </div>
+
+    </div>
+    <input type="text" name="datosTabla" id="id_datosTabla" hidden>
+</form>
+<div class="modal fade" id="familiares_empleado" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">        
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: darkgrey;">
+            <div class="modal-header">
+                <h4 class="encabezados" style="font-weight: bold;">familiar</h4>
+                <button type="button" class="btn btn-info" data-dismiss="modal" title="Cancelar"
+                    id="btn-cancela">
+                    <img src="{% static 'core/img/regresar.svg' %}" width="20" />
+                </button>
+                <button type="button" class="btn btn-success btn-agrega-tabla" title="Agregar"
+                    id="btn-guarda">
+                    <img src="{% static 'core/img/autoriza.svg' %}" width="20" />
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input type="text" name="editar" id="id_editar" class="form-control" hidden>
+                    <div class="form-group col-6">
+                        <strong>Parentezco:</strong>
+                        <select name="parentezco" id="id_parentezco" class="form-control">
+                            {% for id, familia in familiar %}
+                            <option value="{{ id }}">{{ familia }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="parentezco_can" id="id_parentezco_can" class="form-control" hidden>
+                    </div>
+                    <div class="form-group col-12">
+                        <strong>Nombre:</strong>
+                        <input type="text" name="nombre" id="id_nombre" class="form-control">
+                        <input type="text" name="nombre_can" id="id_nombre_can" class="form-control" hidden>
+                    </div>
+                    <div class="form-group col-3">
+                        <strong>Edad:</strong>
+                        <input type="text" name="edad" id="id_edad" class="form-control" maxlength="3"
+                            onfocusout="reformatear('id_edad')" onkeypress="return valideKey(event);">
+                        <input type="text" name="edad_can" id="id_edad_can" class="form-control" hidden>
+                    </div>
+                    <div class="form-group col-3">
+                        <strong>Vive:</strong>
+                        <select name="vive" id="id_vive" class="form-control">
+                            {% for id, opcion in si_no %}
+                            <option value="{{ id }}">{{ opcion }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="vive_can" id="id_vive_can" class="form-control" hidden>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<script>
+    {% block docred %}
+    $('#formaFamiliares').submit(function(event) {
+        // Evitar el envío del formulario por defecto
+        event.preventDefault();
+
+        // Obtener los datos de la tabla y serializarlos como JSON
+        var datosTabla = obtenerDatosTabla();
+        var datosJson = JSON.stringify(datosTabla);
+
+        // Establecer los datos JSON en el campo oculto del formulario
+        $('#id_datosTabla').val(datosJson);
+
+        // Enviar el formulario
+        this.submit();
+    });
+    function obtenerDatosTabla() {
+        var datos = [];
+        $('#tabla_familiares tbody tr').each(function() {
+            var fila = {};
+            $(this).find('td').each(function(index) {
+                if (index === 0 || index == 1 ) return; // Saltar la primera columna (botón de eliminar)
+                if (index == '2') {
+                    fila['parentezco'] = $(this).text();
+                } else if (index == '3') {
+                    fila['nombre'] = $(this).text();
+                } else if (index == '4') {
+                    fila['edad'] = $(this).text();
+                } else {
+                    fila['vive'] = $(this).text();
+                }
+            });
+            datos.push(fila);
+        });
+        return datos;
+    }
+    $('#btn-agrega').on('click', function () {
+        $('#id_editar').val('Nuevo');
+        $('#id_nombre, #id_nombre_can, #id_parentezco, #id_parentezco_can, #id_edad').val('');
+        $('#id_edad_can, #id_vive, #id_vive_can').val('');
+        $('#familiares_empleado').modal('show');
+    }); 
+    $('#btn-guarda').on('click', function () {
+        $('#id_editar').val('Nuevo');
+        $('#familiares_empleado').modal('hide');
+    }); 
+    $('.btn-agrega-tabla').on('click', function () {
+
+        if ($('#id_editar').val() == 'Edita') {
+            // Captura de valores de los campos de la ventana modal
+            var parentezco = $('#id_parentezco_can').val();
+            var nombre = $('#id_nombre_can').val();
+            var edad = $('#id_edad_can').val();
+            var vive = $('#id_vive_can').val();
+        } else if ($('#id_editar').val() == 'Nuevo') {
+            // Captura de valores de los campos de la ventana modal
+            var parentezco = $('#id_parentezco option:selected').text();
+            var nombre = $('#id_nombre').val();
+            var edad = $('#id_edad').val();
+            var vive = $('#id_vive option:selected').text();
+        } else {
+            $('#familiares_empleado').modal('hide');
+            return;
+        }
+
+        if (!parentezco || !nombre || !vive) {
+            alert('Por favor, ponga parentezco, nombre y si vive.');
+            return;
+        }
+
+        // Creación de la nueva fila de la tabla
+        direccion_imagen_elimina = "{% static 'core/img/eliminar.svg' %}";
+        direccion_imagen_edita = "{% static 'core/img/editar.svg' %}";
+        var newRow = '<tr>' +
+            '<td><img class="btnEliminarFila" src="' + direccion_imagen_elimina + '" alt=""></td>' +  // Botón de eliminar en la primera columna
+            '<td><img class="btnEditarFila" src="' + direccion_imagen_edita + '" alt=""></td>' +  // Botón de editar en la primera columna
+            '<td>' + parentezco + '</td>' +
+            '<td>' + nombre + '</td>' +
+            '<td>' + edad + '</td>' +
+            '<td class="text_center">' + vive + '</td>' +
+            '</tr>';
+
+        // Agregar la nueva fila al final de la tabla
+        $('#tabla_familiares tbody').append(newRow);
+
+        // Limpiar los campos de la ventana modal
+        $('#id_parentezco, #id_nombre, #id_edad, #id_vive').val('');
+        $('#id_parentezco_can, #id_nombre_can, #id_edad_can, #id_vive_can').val('');
+
+        // Ocultar la ventana modal
+        $('#familiares_empleado').modal('hide');
+    });
+    $('#btn-cancela').on('click', function () {
+        if ($('#id_editar').val() == 'Edita') {
+            $('.btn-agrega-tabla').click();
+        }
+        $('#familiares_empleado').modal('hide');
+    });
+    $('#tabla_familiares').on('click', '.btnEliminarFila', function () {
+        // Obtener la fila que contiene el botón en el que se hizo clic
+        $(this).closest('tr').remove();
+    });
+    $('#tabla_familiares').on('click', '.btnEditarFila', function () {
+        // Obtener la fila que contiene el botón en el que se hizo clic
+        var fila = $(this).closest('tr');
+        $('#id_editar').val('Edita');
+        fila.find('td').each(function(index) {
+            if (index === 0 || index === 1 ) return; // Saltar la primera columna (botón de eliminar)
+            if (index == '2') {
+                var texto_parentezco = $(this).text();
+                // Seleccionar la opción en el select basada en el texto
+                $('#id_parentezco option').each(function() {
+                    if ($(this).text() === texto_parentezco) {
+                        $(this).prop('selected', true);
+                    }
+                });
+                campo_parentezco_can = $('#id_parentezco_can');
+                campo_parentezco_can.val($(this).text());
+                return; // Salir del bucle each
+            } else if (index == '3') {
+                campo_nombre = $('#id_nombre');
+                campo_nombre_can = $('#id_nombre_can');
+            } else if (index == '4') {
+                campo_nombre = $('#id_edad');
+                campo_nombre_can = $('#id_edad_can');
+            } else {
+                var texto_si_no = $(this).text();
+                // Seleccionar la opción en el select basada en el texto
+                $('#id_vive option').each(function() {
+                    if ($(this).text() === texto_si_no) {
+                        $(this).prop('selected', true);
+                    }
+                });
+                campo_vive_can = $('#id_vive_can');
+                campo_vive_can.val($(this).text());
+                return; // Salir del bucle each
+            }
+            campo_nombre.val($(this).text());
+            campo_nombre_can.val($(this).text());
+        });
+        // Eliminar la fila
+        fila.remove();
+        $('#familiares_empleado').modal('show');
+    });
+    {% endblock %}
+</script>

@@ -9,8 +9,8 @@ class Empleado(models.Model,PermissionRequiredMixin):
     materno = models.CharField('Materno', max_length=35, null=True, blank=True)
     rfc = models.CharField('R.F.C.', max_length=18, null=True, blank=True)
     curp = models.CharField('CURP', max_length=18)
-    genero = models.IntegerField('Género', choices=GENERO)
-    estatus = models.IntegerField('Estatus', choices=ESTATUS_BAJA_ACTIVO)
+    genero = models.IntegerField('Género', choices=GENERO, default=1)
+    estatus = models.IntegerField('Estatus', choices=ESTATUS_BAJA_ACTIVO, default=1)
 
     class Meta:
         verbose_name = 'Empleado' 
@@ -26,8 +26,8 @@ class Generales(models.Model,PermissionRequiredMixin):
     empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
     domicilio = models.JSONField()
     beneficiario = models.JSONField(null=True, blank=True)
-    estudio = models.JSONField(null=True, blank=True)
-    esperincia = models.JSONField(null=True, blank=True)
+    escolaridad = models.JSONField(null=True, blank=True)
+    experiencia = models.JSONField(null=True, blank=True)
     familia = models.JSONField(null=True, blank=True)
     idioma = models.JSONField(null=True, blank=True)
     referencia = models.JSONField(null=True, blank=True)
@@ -38,5 +38,5 @@ class Generales(models.Model,PermissionRequiredMixin):
         db_table = 'Generales'
 
     def __str__(self):
-        return '%s %s, %s' % (self.empleado.paterno, self.empleado.materno, self.empleado.nomrbe, self.domicilio)
+        return '%s %s, %s, %s' % (self.empleado.paterno, self.empleado.materno, self.empleado.nombre, self.domicilio)
 

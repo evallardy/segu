@@ -1,0 +1,65 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block css %}
+<title>Vehículos</title>
+{% endblock %}
+{% block contenido %}
+    <h1>Listado de armas</h1>
+    <a class="btn btn-info" href="{% url 'arma_create' %}">Crear arma</a>
+    {% if object_list %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Calibre</th>
+                <th>Cargador</th>
+                <th>Serie</th>
+                <th>Registro</th>
+                <th>Baja</th>
+                <th>Estatus</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for arma in object_list %}
+            <tr>
+                {% if arma.get_tipo_arma_display == 'Otro' %}
+                    <td>{{arma.otro_tipo_arma|default_if_none:""}}</td>
+                {% else %}
+                    <td>{{arma.get_tipo_arma_display|default_if_none:""}}</td>
+                {% endif %}
+                {% if arma.get_marca_display == 'Otra' %}
+                    <td>{{arma.otra_marca|default_if_none:""}}</td>
+                {% else %}
+                    <td>{{arma.get_marca_display|default_if_none:""}}</td>
+                {% endif %}
+                <td>{{arma.modelo|default_if_none:""}}</td>
+                {% if arma.get_calibre_display == 'Otro' %}
+                    <td>{{arma.otro_calibre|default_if_none:""}}</td>
+                {% else %}
+                    <td>{{arma.get_calibre_display|default_if_none:""}}</td>
+                {% endif %}
+                <td>{{arma.capacidad_cargador|default_if_none:""}}</td>
+                <td>{{arma.serie|default_if_none:""}}</td>
+                <td>{{arma.fecha_alta|default_if_none:""}}</td>
+                <td>{{arma.fecha_baja|default_if_none:""}}</td>
+                <td>{{arma.get_estatus_display|default_if_none:""}}</td>
+                <td><a href="{% url 'arma_update' arma.pk %}">
+                    <img src="{% static 'core/img/editar.svg' %}" alt="">
+                </a></td>
+                <td><a href="{% url 'arma_delete' arma.pk %}">
+                    <img src="{% static 'core/img/eliminar.svg' %}" alt="">
+                </a></td>
+                <td><a href="{% url 'arma_detail' arma.pk %}">
+                    <img src="{% static 'core/img/consultar.svg' %}" alt="">
+                </a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>    
+    {% endif %}
+{% endblock %}

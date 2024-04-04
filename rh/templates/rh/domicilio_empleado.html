@@ -1,0 +1,57 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block css %}
+<title>Domicilio empleado</title>
+{% endblock %}
+{% block contenido %}
+<form method="post" action="{% url 'domicilio_empleado' pk %}">
+    {% csrf_token %}
+    <div class="container">
+        <h1>Domicilio empleado</h1>
+        <h4 style="font-style: italic;">{{ nombre }}</h4>
+        <hr>
+        <div class="row">
+            <div class="form-group col-12">
+                <strong>Calle:</strong>
+                <input type="text" name="calle" id="id_calle" class="form-control"
+                    value="{{ datos.domicilio.calle }}">
+            </div>
+            <div class="form-group col-12">
+                <strong>Colonia:</strong>
+                <input type="text" name="colonia" id="id_colonia" class="form-control"
+                    value="{{ datos.domicilio.colonia }}">
+            </div>
+            <div class="form-group col-4">
+                <strong>C.P.:</strong>
+                <input type="text" name="codigo_postal" id="id_codigo_postal" class="form-control" maxlength="5"
+                    value="{{ datos.domicilio.codigo_postal }}"
+                    onfocusout="reformatear('id_codigo_postal')" onkeypress="return valideKey(event);">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-12">
+                <strong>Municipio:</strong>
+                <input type="text" name="municipio" id="id_municipio" class="form-control"
+                    value="{{ datos.domicilio.municipio }}">
+            </div>
+            <div class="form-group col-12">
+                <strong>Estado:</strong>
+                <select name="estado" id="id_estado" class="form-control">
+                    {% for id, estado in estados %}
+                        <option value="{{ id }}" {% if id == datos.domicilio.estado %}selected{% endif %}>{{ estado }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <button class="btn btn-success col-6" type="submit">
+                <img src="{% static 'core/img/guardar.svg' %}" alt="">
+            </button>
+            <a class="btn btn-info col-6" href="{% url 'modificar_empleado' pk %}" >
+                <img src="{% static 'core/img/regresar.svg' %}" alt="">
+            </a>
+        </div>
+    </div>
+</form>
+{% endblock %}

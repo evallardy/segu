@@ -1,0 +1,267 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block css %}
+<title>Beneficiarios empleado</title>
+{% endblock %}
+{% block contenido %}
+<form id="formaBeneficiarios" method="post" action="{% url 'beneficiario_empleado' pk %}">
+    {% csrf_token %}
+    <div>
+        <h1>Lista de beneficiarios</h1>
+        <h4 style="font-style: italic;">{{ nombre }}</h4>
+        <hr>
+        <div class="form-group col-4" id="gpo_btn_cliente">
+            <button type="button" class="btn btn-info" id="btn-agrega">
+                Agrega beneficiario
+            </button>
+        </div>
+        <table class="table table-striped" id="tabla_beneficiarios">
+            <thead>
+                <tr>
+                    <th class="col-1"></th>
+                    <th class="col-1"></th>
+                    <th>Nombre</th>
+                    <th>CURP</th>
+                    <th>Parentezco</th>
+                    <th class="text-center">%</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for beneficiario in datos.beneficiario %}
+                <tr>
+                    <td><img class="btnEliminarFila" src="{% static 'core/img/eliminar.svg' %}" alt=""></td>
+                    <td><img class="btnEditarFila" src="{% static 'core/img/editar.svg' %}" alt=""></td>
+                    <td>{{ beneficiario.nombre }}</td>
+                    <td>{{ beneficiario.curp }}</td>
+                    <td>{{ beneficiario.parentezco }}</td>
+                    <td class="text-center">{{ beneficiario.porcentaje }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <hr>
+        <div class="row justify-content-center">
+            <button class="btn btn-success col-4" type="submit">
+                <img src="{% static 'core/img/guardar.svg' %}" alt="">
+            </button>
+            <a class="btn btn-info col-4 info1" href="{% url 'modificar_empleado' pk %}">
+                <img src="{% static 'core/img/regresar.svg' %}" alt="">
+            </a>
+        </div>
+
+    </div>
+    <input type="text" name="datosTabla" id="id_datosTabla" hidden>
+</form>
+<div class="modal fade" id="beneficiarios_empleado" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">        
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: darkgrey;">
+            <div class="modal-header">
+                <h4 class="encabezados" style="font-weight: bold;">Beneficiario</h4>
+                <button type="button" class="btn btn-info" data-dismiss="modal" title="Cancelar"
+                    id="btn-cancela">
+                    <img src="{% static 'core/img/regresar.svg' %}" width="20" />
+                </button>
+                <button type="button" class="btn btn-success btn-agrega-tabla" title="Agregar"
+                    id="btn-guarda">
+                    <img src="{% static 'core/img/autoriza.svg' %}" width="20" />
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input type="text" name="editar" id="id_editar" class="form-control" hidden>
+                    <div class="form-group col-12">
+                        <strong>Nombre:</strong>
+                        <input type="text" name="nombre" id="id_nombre" class="form-control">
+                        <input type="text" name="nombre_can" id="id_nombre_can" class="form-control" hidden>
+                    </div>
+                    <div class="form-group col-6">
+                        <strong>CURP:</strong>
+                        <input type="text" name="curp" id="id_curp" class="form-control">
+                        <input type="text" name="curp_can" id="id_curp_can" class="form-control" hidden>
+                    </div>
+                    <div class="form-group col-6">
+                        <strong>Parentezco:</strong>
+                        <select name="familia" id="id_familia" class="form-control">
+                            {% for id, familia in familiar %}
+                            <option value="{{ id }}">{{ familia }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="familia_can" id="id_familia_can" class="form-control" hidden>
+                    </div>
+                    <div class="form-group col-3">
+                        <strong>Porcentaje:</strong>
+                        <input type="text" name="porcentaje" id="id_porcentaje" class="form-control" maxlength="3"
+                            onfocusout="reformatear('id_porcentaje')" onkeypress="return valideKey(event);">
+                        <input type="text" name="porcentaje_can" id="id_porcentaje_can" class="form-control" hidden>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<script>
+    {% block docred %}
+    $('#formaBeneficiarios').submit(function(event) {
+        // Evitar el envío del formulario por defecto
+        event.preventDefault();
+
+        // Obtener los datos de la tabla y serializarlos como JSON
+        var datosTabla = obtenerDatosTabla();
+        var datosJson = JSON.stringify(datosTabla);
+
+        // Establecer los datos JSON en el campo oculto del formulario
+        $('#id_datosTabla').val(datosJson);
+
+        // Enviar el formulario
+        this.submit();
+    });
+    function obtenerDatosTabla() {
+        var datos = [];
+        $('#tabla_beneficiarios tbody tr').each(function() {
+            var fila = {};
+            $(this).find('td').each(function(index) {
+                if (index === 0 || index == 1 ) return; // Saltar la primera columna (botón de eliminar)
+                if (index == '2') {
+                    fila['nombre'] = $(this).text();
+                } else if (index == '3') {
+                    fila['curp'] = $(this).text();
+                } else if (index == '4') {
+                    fila['parentezco'] = $(this).text();
+                } else {
+                    fila['porcentaje'] = $(this).text();
+                }
+            });
+            datos.push(fila);
+        });
+        return datos;
+    }
+    $('#id_porcentaje').on('input', function () {
+        var valor = $(this).val();
+        // Verificar si el valor está dentro del rango permitido
+        if (valor < 0 || valor > 100) {
+            alert('El porcentaje debe estar entre 0 y 100.');
+            // Limpiar el campo
+            $(this).val('');
+        }
+    });
+    $('#btn-agrega').on('click', function () {
+        var vacio = '';
+        $('#id_editar').val('Nuevo');
+        $('#id_nombre, #id_nombre_can, #id_curp, #id_curp_can, #id_familia').val(vacio);
+        $('#id_familia_can, #id_porcentaje, #id_porcentaje_can').val(vacio);
+        $('#beneficiarios_empleado').modal('show');
+    }); 
+    $('#btn-guarda').on('click', function () {
+        $('#id_editar').val('Nuevo');
+        $('#beneficiarios_empleado').modal('hide');
+    }); 
+    $('.btn-agrega-tabla').on('click', function () {
+
+        if ($('#id_editar').val() == 'Edita') {
+            // Captura de valores de los campos de la ventana modal
+            var nombre = $('#id_nombre_can').val();
+            var curp = $('#id_curp_can').val();
+            var familia = $('#id_familia_can').val();
+            var porcentaje = $('#id_porcentaje_can').val();
+        } else if ($('#id_editar').val() == 'Nuevo') {
+            // Captura de valores de los campos de la ventana modal
+            var nombre = $('#id_nombre').val();
+            var curp = $('#id_curp').val();
+            var familia = $('#id_familia option:selected').text();
+            var porcentaje = $('#id_porcentaje').val();
+        } else {
+            $('#beneficiarios_empleado').modal('hide');
+            return;
+        }
+
+        if (!nombre || !porcentaje) {
+            alert('Por favor, ponga nombre y porcentaje.');
+            return;
+        }
+
+        // Sumar los porcentajes de las filas existentes en la tabla
+        var sumaPorcentajes = parseInt('0');
+        $('#tabla_beneficiarios tbody tr').each(function () {
+            var valor = parseInt($(this).find('td:last').text());
+            sumaPorcentajes += valor;
+        });
+
+        // Agregar el porcentaje del nuevo beneficiario
+        sumaPorcentajes = parseInt(sumaPorcentajes) + parseInt(porcentaje);
+
+        // Verificar si la suma total es mayor a 100
+        if (sumaPorcentajes > 100) {
+            alert('La suma total de porcentajes no puede ser mayor a 100.');
+            return;
+        }
+
+        // Creación de la nueva fila de la tabla
+        direccion_imagen_elimina = "{% static 'core/img/eliminar.svg' %}";
+        direccion_imagen_edita = "{% static 'core/img/editar.svg' %}";
+        var newRow = '<tr>' +
+            '<td><img class="btnEliminarFila" src="' + direccion_imagen_elimina + '" alt=""></td>' +  // Botón de eliminar en la primera columna
+            '<td><img class="btnEditarFila" src="' + direccion_imagen_edita + '" alt=""></td>' +  // Botón de editar en la primera columna
+            '<td>' + nombre + '</td>' +
+            '<td>' + curp + '</td>' +
+            '<td>' + familia + '</td>' +
+            '<td class="text_center">' + porcentaje + '</td>' +
+            '</tr>';
+
+        // Agregar la nueva fila al final de la tabla
+        $('#tabla_beneficiarios tbody').append(newRow);
+
+        // Limpiar los campos de la ventana modal
+        $('#id_nombre, #id_curp, #id_familia, #id_porcentaje').val('');
+        $('#id_nombre_can, #id_curp_can, #id_familia_can, #id_porcentaje_can').val('');
+
+        // Ocultar la ventana modal
+        $('#beneficiarios_empleado').modal('hide');
+    });
+    $('#btn-cancela').on('click', function () {
+        if ($('#id_editar').val() == 'Edita') {
+            $('.btn-agrega-tabla').click();
+        }
+        $('#beneficiarios_empleado').modal('hide');
+    });
+    $('#tabla_beneficiarios').on('click', '.btnEliminarFila', function () {
+        // Obtener la fila que contiene el botón en el que se hizo clic
+        $(this).closest('tr').remove();
+    });
+    $('#tabla_beneficiarios').on('click', '.btnEditarFila', function () {
+        // Obtener la fila que contiene el botón en el que se hizo clic
+        var fila = $(this).closest('tr');
+        $('#id_editar').val('Edita');
+        fila.find('td').each(function(index) {
+            if (index === 0 || index == 1 ) return; // Saltar la primera columna (botón de eliminar)
+            if (index == '2') {
+                campo_nombre = $('#id_nombre');
+                campo_nombre_can = $('#id_nombre_can');
+            } else if (index == '3') {
+                campo_nombre = $('#id_curp');
+                campo_nombre_can = $('#id_curp_can');
+            } else if (index == '4') {
+                var texto_parentezco = $(this).text();
+                // Seleccionar la opción en el select basada en el texto
+                $('#id_familia option').each(function() {
+                    if ($(this).text() === texto_parentezco) {
+                        $(this).prop('selected', true);
+                    }
+                });
+                campo_nombre_can = $('#id_familia_can');
+                campo_nombre_can.val($(this).text());
+                return; // Salir del bucle each
+            } else {
+                campo_nombre = $('#id_porcentaje');
+                campo_nombre_can = $('#id_porcentaje_can');
+            }
+            campo_nombre.val($(this).text());
+            campo_nombre_can.val($(this).text());
+        });
+        // Eliminar la fila
+        fila.remove();
+        $('#beneficiarios_empleado').modal('show');
+    });
+    {% endblock %}
+</script>

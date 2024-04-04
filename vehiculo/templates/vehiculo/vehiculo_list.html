@@ -1,0 +1,69 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block css %}
+<title>Vehículos</title>
+{% endblock %}
+{% block contenido %}
+    <h1>Listado de vehículos</h1>
+    <a class="btn btn-info" href="{% url 'vehiculo_create' %}">Crear vehículo</a>
+    {% if object_list %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Placa</th>
+                <th>Tipo</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>año</th>
+                <th>Serie</th>
+                <th>Color</th>
+                <th>combustible</th>
+                <th>Alta</th>
+                <th>Baja</th>
+                <th>Estatus</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vehiculo in object_list %}
+            <tr>
+                <td>{{vehiculo.placa|default_if_none:""}}</td>
+                {% if vehiculo.get_tipo_vehiculo_display == 'Otro' %}
+                    <td>{{vehiculo.otro_tipo_vehiculo|default_if_none:""}}</td>
+                {% else %}
+                    <td>{{vehiculo.get_tipo_vehiculo_display|default_if_none:""}}</td>
+                {% endif %}
+                {% if vehiculo.get_marca_display == 'Otra' %}
+                    <td>{{vehiculo.otra_marca|default_if_none:""}}</td>
+                {% else %}
+                    <td>{{vehiculo.get_marca_display|default_if_none:""}}</td>
+                {% endif %}
+                <td>{{vehiculo.modelo|default_if_none:""}}</td>
+                <td>{{vehiculo.anio|stringformat:'d'}}</td>
+                <td>{{vehiculo.numero_serie|default_if_none:""}}</td>
+                <td>{{vehiculo.color|default_if_none:""}}</td>
+                {% if vehiculo.get_tipo_combustible_display == 'Otro' %}
+                    <td>{{vehiculo.otro_tipo_combustible|default_if_none:""}}</td>
+                {% else %}
+                    <td>{{vehiculo.get_tipo_combustible_display|default_if_none:""}}</td>
+                {% endif %}
+                <td>{{vehiculo.fecha_alta|default_if_none:""}}</td>
+                <td>{{vehiculo.fecha_baja|default_if_none:""}}</td>
+                <td>{{vehiculo.get_estatus_display|default_if_none:""}}</td>
+                <td><a href="{% url 'vehiculo_update' vehiculo.pk %}">
+                    <img src="{% static 'core/img/editar.svg' %}" alt="">
+                </a></td>
+                <td><a href="{% url 'vehiculo_baja' vehiculo.pk %}">
+                    <img src="{% static 'core/img/eliminar.svg' %}" alt="">
+                </a></td>
+                <td><a href="{% url 'vehiculo_detail' vehiculo.pk %}">
+                    <img src="{% static 'core/img/consultar.svg' %}" alt="">
+                </a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>    
+    {% endif %}
+{% endblock %}
