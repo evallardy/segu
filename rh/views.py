@@ -13,6 +13,9 @@ class ListarEmpleadosView(ListView):
     template_name = 'rh/listar_empleados.html'
     context_object_name = 'empleados'
 
+    def get_queryset(self):
+        return Empleado.objects.exclude(estatus=0)
+
 class CrearEmpleadoView(CreateView):
     model = Empleado
     form_class = EmpleadoForm
@@ -31,7 +34,7 @@ class CrearEmpleadoView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['forma'] = 'Alta de empleado'
+        context['forma'] = 'Crea empleado'
         return context
 
 class ModificarEmpleadoView(UpdateView):
@@ -54,7 +57,8 @@ def confirmar_eliminar(request, pk):
 def eliminar_empleado(request, pk):
     empleado = get_object_or_404(Empleado, pk=pk)
     if empleado:
-        empleado.delete()
+        empleado.estatus = 0  # Cambiar el estado a 0 en lugar de eliminar
+        empleado.save()
         return redirect('listar_empleados')
     return redirect('confirmar_eliminar', pk=pk)
 

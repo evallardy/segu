@@ -59,3 +59,18 @@ class VehiculoForm(forms.ModelForm):
             self.add_error('otro_tipo_combustible', 'Especifica otro tipo')
 
         return cleaned_data
+
+class VehiculoConsultaForm(forms.ModelForm):
+    class Meta:
+        model = Vehiculo
+        fields = '__all__'
+        widgets = {
+            'fecha_alta': DateInput(),
+            'fecha_baja': DateInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for form in self.visible_fields():
+            form.field.widget.attrs['class'] = 'form-control'

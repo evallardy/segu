@@ -1,14 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle del Vehículo</title>
-</head>
-<body>
-    <h1>Detalle del Vehículo</h1>
-    <p><strong>Marca:</strong> {{ object.marca }}</p>
-    <p><strong>Modelo:</strong> {{ object.modelo }}</p>
-    <!-- Agrega más campos según sea necesario -->
-</body>
-</html>
+{% extends "core/base.html" %}
+{% load static %}
+{% block css %}
+<title>Detalle arma</title>
+{% endblock %}
+{% block contenido %}
+<h1>Detalle arma</h1>
+<div class="container">
+    <div class="col-12 row">
+        <div class="col-4"><strong>Tipo arma</strong>
+            <input type="text" name="tipo_arma" id="id_tipo_arma" class="form-control" readonly
+                value="{{ object.get_tipo_arma_display }}">
+        </div>
+        <div class="col-4 row" id="gpo_otro_tipo_arma" 
+            {% if object.tipo_arma != "99" and object.tipo_arma != 99 %} 
+                hidden
+            {% endif %}>
+            <div class="col-12"><strong>Otro tipo arma</strong>
+                <input type="text" name="otro_tipo_arma" id="id_otro_tipo_arma" class="form-control" readonly
+                    value="{{ object.otro_tipo_arma|default_if_none:'' }}">
+            </div>
+        </div>
+    </div>
+    <div class="col-12 row">
+        <div class="col-4"><strong>Marca</strong>
+            <input type="text" name="marca" id="id_marca" class="form-control" readonly
+                value="{{ object.marca|default_if_none:'' }}">
+        </div>
+        <div class="col-4 row" id="gpo_otra_marca" 
+            {% if object.marca != "99" and object.marca != 99 %} 
+                hidden 
+            {% endif %}>
+            <div class="col-12"><strong>Otra marca</strong>
+                <input type="text" name="otra_marca" id="id_otra_marca" class="form-control" readonly
+                    value="{{ object.otra_marca|default_if_none:'' }}">
+            </div>
+        </div>
+    </div>
+    <div class="col-12 row">
+        <div class="col-4"><strong>Modelo</strong>
+            <input type="text" name="modelo" id="id_modelo" class="form-control" readonly
+                value="{{ object.modelo|default_if_none:'' }}">
+        </div>
+        <div class="col-8 row">
+            <div class="col-6"><strong>Calibre</strong>
+                <input type="text" name="calibre" id="id_calibre" class="form-control" readonly
+                    value="{{ object.calibre|default_if_none:'' }}">
+
+            </div>
+            <div class="col-6 row" id="gpo_otro_calibre" 
+                {% if object.calibre != "99" and object.calibre != 99 %} 
+                    hidden
+                {% endif %}>
+                <div class="col-12"><strong>Otro calibre</strong>
+                    <input type="text" name="otro_calibre" id="id_otro_calibre" class="form-control" readonly
+                        value="{{ object.otro_calibre|default_if_none:'' }}">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-4"><strong>Capacidad cargador</strong>
+                <input type="text" name="capacidad_cargador" id="id_capacidad_cargador" class="form-control" readonly
+                    value="{{ object.capacidad_cargador|default_if_none:'' }}">
+            </div>
+            <div class="col-8"><strong>Numero serie</strong>
+                <input type="text" name="numero_serie" id="id_numero_serie" readonly
+                    value="{{ object.numero_serie.value|default_if_none:'' }}" class="form-control">
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-4"><strong>Fecha alta</strong>
+                <input type="date" name="fecha_alta" id="id_fecha_alta" class="form-control" readonly
+                    value="{{ object.fecha_alta|date:'Y-m-d' }}">
+            </div>
+            <div class="col-4"><strong>Fecha baja</strong>
+                <input type="date" name="fecha_baja" id="id_fecha_baja" class="form-control" readonly
+                    value="{{ object.fecha_baja|date:'Y-m-d'|default_if_none:'' }}">
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-4"><strong>Estatus</strong>
+                <input type="text" name="estatus" id="id_estatus" readonly
+                    value="{{ object.get_estatus_display|default_if_none:'' }}" class="form-control">
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row justify-content-center">
+        <a class="btn btn-info col-4 info1" href="{% url 'arma_list' %}">
+            <img src="{% static 'core/img/regresar.svg' %}" alt="">
+        </a>
+    </div>
+</div>
+{% endblock %}

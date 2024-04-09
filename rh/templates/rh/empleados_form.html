@@ -29,7 +29,9 @@
         </div>
         <div class="col-12 row">
             <div class="col-4"><strong>{{ form.genero.label_tag }}</strong> {{ form.genero }}</div>
+            {% if forma == 'Edita empleado' %}
             <div class="col-4"><strong>{{ form.estatus.label_tag }}</strong> {{ form.estatus }}</div>
+            {% endif %}
         </div>
         {% if forma == 'Edita empleado' %}
         <hr>

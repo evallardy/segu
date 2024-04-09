@@ -4,11 +4,12 @@
 {% bootstrap_css %}
 {% load crispy_forms_tags %}
 {% block css %}
+<title>{% if form.instance.pk %}Edita vehículo{% else %}Crea vehículo{% endif %}</title>
 {% endblock %}
 {% block contenido %}
 <form method="post">
     {% csrf_token %}
-    <h1>{% if form.instance.pk %}Editar vehículo{% else %}Nuevo vehículo{% endif %}</h1>
+    <h1>{% if form.instance.pk %}Edita vehículo{% else %}Crea vehículo{% endif %}</h1>
     <div class="container">
         <div class="col-12 row">
             <div class="col-4"><strong>{{ form.placa.label_tag }}</strong> {{ form.placa }}</div>
@@ -35,9 +36,7 @@
                     {{ form.otra_marca }}
                     <label class="label_errores">{{ form.errors.otra_marca.0 }}</label>
                 </div>
-                
             </div>
-            
         </div>
         <div class="col-12 row">
             <div class="col-4"><strong>{{ form.modelo.label_tag }}</strong> {{ form.modelo }}</div>

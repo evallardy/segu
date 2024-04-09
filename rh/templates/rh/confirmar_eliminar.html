@@ -4,42 +4,53 @@
 <title>Elimina empleado</title>
 {% endblock %}
 {% block contenido %}
-    <h1>Confirmar Eliminación</h1>
-    <p class="text-danger"><strong>¿ Estás seguro de que deseas eliminar al empleado ?</strong></p>
-    <table class="table table-striped">
-        <tbody>
-            <tr>
-                <td style="width: 20%;">Nombre:</td>
-                <td>{{ empleado.nombre }}</td>
-            </tr>
-            <tr>
-                <td>Paterno:</td>
-                <td>{{ empleado.paterno }}</td>
-            </tr>
-            <tr>
-                <td>Materno:</td>
-                <td>{{ empleado.materno }}</td>
-            </tr>
-            <tr>
-                <td>RFC:</td>
-                <td>{{ empleado.rfc }}</td>
-            </tr>
-            <tr>
-                <td>CURP:</td>
-                <td>{{ empleado.curp }}</td>
-            </tr>
-            <tr>
-                <td>Género:</td>
-                <td>{{ empleado.get_genero_display }}</td>
-            </tr>
-            <tr>
-                <td>Estatus:</td>
-                <td>{{ empleado.get_estatus_display }}</td>
-            </tr>
-        </tbody>
-    </table>
-    <form method="post">
+<form method="post">
+    <div class="container">
+        <h1>Confirmar Eliminación</h1>
+        <p class="text-danger"><strong>¿ Estás seguro de que deseas eliminar al empleado ?</strong></p>
         {% csrf_token %}
+        <div class="col-12 row">
+            <div class="col-4"><strong>Código</strong>
+                <input type="text" name="codigo" id="id_codigo" class="form-control" readonly
+                    value="{{ empleado.codigo|default_if_none:'' }}">
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-4"><strong>Nombre</strong>
+                <input type="text" name="nombre" id="id_nombre" class="form-control" readonly
+                    value="{{ empleado.nombre|default_if_none:'' }}">
+            </div>
+            <div class="col-4"><strong>Paterno</strong>
+                <input type="text" name="paterno" id="id_paterno" class="form-control" readonly
+                    value="{{ empleado.paterno|default_if_none:'' }}">
+            </div>
+            <div class="col-4"><strong>Materno</strong>
+                <input type="text" name="materno" id="id_materno" class="form-control" readonly
+                    value="{{ empleado.materno|default_if_none:'' }}">
+            </div>
+
+            <div class="col-6"><strong>RFC</strong>
+                <input type="text" name="rfc" id="id_rfc" class="form-control" readonly
+                    value="{{ empleado.rfc|default_if_none:'' }}">
+            </div>
+            <div class="col-6"><strong>CURP</strong>
+                <input type="text" name="curp" id="id_curp" class="form-control" readonly
+                    value="{{ empleado.curp|default_if_none:'' }}">
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-4"><strong>Genero</strong>
+                <input type="text" name="genero" id="id_genero" class="form-control" readonly
+                    value="{{ empleado.get_genero_display|default_if_none:'' }}">
+
+
+            </div>
+            <div class="col-4"><strong>Estatus</strong>
+                <input type="text" name="estatus" id="id_estatus" class="form-control" readonly
+                    value="{{ empleado.get_estatus_display|default_if_none:'' }}">
+            </div>
+        </div>
+        <hr>
         <div class="row">
             <a class="btn btn-danger col-6" href="{% url 'eliminar_empleado' empleado.id %}">
                 <img src="{% static 'core/img/eliminar.svg' %}" alt="">
@@ -48,5 +59,6 @@
                 <img src="{% static 'core/img/regresar.svg' %}" alt="">
             </a>
         </div>
-    </form>
+    </div>
+</form>
 {% endblock %}

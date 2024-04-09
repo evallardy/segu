@@ -3,7 +3,7 @@ from django.views.generic.edit import ModelFormMixin
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from .models import Vehiculo
-from .forms import VehiculoForm
+from .forms import VehiculoForm, VehiculoConsultaForm
 
 class VehiculoListView(ListView):
     model = Vehiculo
@@ -38,7 +38,16 @@ class VehiculoCreateView(CreateView):
 
 class VehiculoDetailView(DetailView):
     model = Vehiculo
+    form_class = VehiculoConsultaForm
     template_name = 'vehiculo/vehiculo_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Itera sobre los campos del formulario para agregar la clase 'form-control'
+        for field_name, field_value in context['object'].__dict__.items():
+            if hasattr(field_value, 'field') and hasattr(field_value.field.widget, 'attrs'):
+                field_value.field.widget.attrs['class'] = 'form-control'
+        return context
 
 class VehiculoUpdateView(UpdateView):
     model = Vehiculo
@@ -69,7 +78,7 @@ class VehiculoBajaView(View):
         # Aquí puedes realizar cualquier otra lógica necesaria antes de renderizar el template
         
         # Definir el contexto con el vehículo
-        context = {'vehiculo': vehiculo}
+        context = {'object': vehiculo}
 
         # Renderizar el template con el contexto y devolver la respuesta
         return render(request, 'vehiculo/vehiculo_confirm_delete.html', context)

@@ -4,11 +4,12 @@
 {% bootstrap_css %}
 {% load crispy_forms_tags %}
 {% block css %}
+<title>{% if form.instance.pk %}Edita arma{% else %}Crea arma{% endif %}</title>
 {% endblock %}
 {% block contenido %}
 <form method="post">
     {% csrf_token %}
-    <h1>{% if form.instance.pk %}Editar arma{% else %}Nueva arma{% endif %}</h1>
+    <h1>{% if form.instance.pk %}Edita arma{% else %}Crea arma{% endif %}</h1>
     <div class="container">
         <div class="col-12 row">
             <div class="col-4"><strong>{{ form.tipo_arma.label_tag }}</strong> {{ form.tipo_arma }}</div>
@@ -70,15 +71,6 @@
             {% if form.instance.pk %}
             <hr>
             <div class="row justify-content-center">
-                <a class="btn btn-info col-1 fs-7" href="#" title="Tenencia">
-                    <img src="{% static 'core/img/tenencia.svg' %}" alt="">
-                </a>
-                <a class="btn btn-info col-1 fs-7" href="#" title="Verificación">
-                    <img src="{% static 'core/img/verificacion.svg' %}" alt="">
-                </a>
-                <a class="btn btn-info col-1 fs-7" href="#" title="kilometraje">
-                    <img src="{% static 'core/img/kilometraje.svg' %}" alt="">
-                </a>
                 <a class="btn btn-info col-1 fs-7" href="#" title="Eventos">
                     <img src="{% static 'core/img/evento.svg' %}" alt="">
                 </a>

@@ -1,16 +1,97 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmar Eliminación del Vehículo</title>
-</head>
-<body>
+{% extends "core/base.html" %}
+{% load static %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% load crispy_forms_tags %}
+{% block css %}
+<title>Elimina vehículo</title>
+{% endblock %}
+{% block contenido %}
     <h1>Confirmar Eliminación del Vehículo</h1>
-    <p>¿Estás seguro de que deseas eliminar el vehículo "{{ object.marca }} - {{ object.modelo }}"?</p>
+    <p style="color: red;">¿Estás seguro de que deseas eliminar el vehículo?</p>
     <form method="post">
         {% csrf_token %}
-        <button type="submit">Sí, eliminar</button>
+        <div class="col-12 row">
+            <div class="col-4"><strong>Placa</strong>
+                <input type="text" name="placa" id="id_placa" value="{{ object.placa|default_if_none:''}}"
+                    readonly class="form-control">
+            </div>
+            <div class="col-4"><strong>Tipo vehiculo</strong>
+                <input type="text" name="tipo_vehiculo" id="id_tipo_vehiculo" value="{{ object.get_tipo_vehiculo_display }}"
+                readonly class="form-control">
+            </div>
+            <div class="col-4 row" id="gpo_otro_tipo_vehiculo" 
+                {% if object.tipo_vehiculo != "99" and object.tipo_vehiculo != 99 %} hidden {% endif %}>
+                <div class="col-12"><strong>Otro tipo</strong>
+                    <input type="text" name="otro_tipo_vehiculo" id="id_otro_tipo_vehiculo" value="{{ object.otro_tipo_vehiculo|default_if_none:'' }}"
+                    readonly class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-4"><strong>Marca</strong>
+                <input type="text" name="marca" id="id_marca" value="{{ object.get_marca_display }}"
+                readonly class="form-control">
+            </div>
+            <div class="col-4 row" id="gpo_otra_marca" 
+                {% if object.marca != "99" and object.marca != 99 %} hidden {% endif %}>
+                <div class="col-12"><strong>Otra marca</strong>
+                    <input type="text" name="otra_marca" id="id_otra_marca" value="{{ object.otra_marca|default_if_none:'' }}"
+                    readonly class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-4"><strong>Modelo</strong>
+                <input type="text" name="modelo" id="id_modelo" value="{{ object.modelo|default_if_none:'' }}"
+                readonly class="form-control">
+            
+            </div>
+            <div class="col-4"><strong>Año</strong>
+                <input type="text" name="anio" id="id_anio" class="form-control"
+                    readonly value="{{ object.anio|default_if_none:''|stringformat:'d' }}">
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-8"><strong>Numero serie</strong>
+                <input type="text" name="numero_serie" id="id_numero_serie" class="form-control"
+                    readonly value="{{ object.numero_serie|default_if_none:'' }}">
+            </div>
+            <div class="col-4   "><strong>Color</strong>
+                <input type="text" name="color" id="id_color" class="form-control"
+                    readonly value="{{ object.color|default_if_none:'' }}">
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-4"><strong>Tipo combustible</strong>
+                <input type="text" name="tipo_combustible" id="id_tipo_combustible" class="form-control"
+                    value='{{ object.get_tipo_combustible_display }}' readonly>
+            </div>
+            <div class="col-4" id="gpo_otro_combustible" 
+                {% if object.tipo_combustible != "99" and object.tipo_combustible != 99 %} hidden {% endif %}>
+                <strong>Otro tipo combustible</strong>
+                 <input type="text" name="otro_tipo_combustible" id="id_otro_tipo_combustible" class="form-control"
+                 value='{{ object.otro_tipo_combustible|default_if_none:"" }}' readonly>
+         </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-4"><strong>Alta</strong>
+                <input type="text" name="fecha_alta" id="id_fecha_alta" class="form-control"
+                    value='{{ object.fecha_alta }}' readonly>
+            </div>
+            <div class="col-4"><strong>Baja</strong>
+                <input type="text" name="fecha_baja" id="id_fecha_baja" class="form-control"
+                    value='{{ object.fecha_baja|default_if_none:"" }}' readonly>
+            </div>
+        </div>        
+        <hr>
+        <div class="row justify-content-center">
+            <button class="btn btn-danger col-4" type="submit" title="Confirmar eliminar">
+                <img src="{% static 'core/img/eliminar.svg' %}" alt="">
+            </button>
+            <a class="btn btn-info col-4 info1" href="{% url 'vehiculo_list' %}" title="Cancelar y regresar">
+                <img src="{% static 'core/img/regresar.svg' %}" alt="">
+            </a>
+        </div>
     </form>
-</body>
-</html>
+{% endblock %}

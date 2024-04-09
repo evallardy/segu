@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from .models import Armamento
@@ -49,18 +49,36 @@ class ArmaUpdateView(UpdateView):
         form.fields['fecha_baja'].initial = self.object.fecha_baja
         return form    
 
-class ArmaDeleteView(DeleteView):
+class ArmaDeleteView(View):
     model = Armamento
     template_name = 'armamento/arma_confirm_delete.html'
     success_url = reverse_lazy('arma_list')
 
     def get(self, request, *args, **kwargs):
-        # Lógica para manejar solicitudes GET
-        return render(request, template_name, context)
+        # Obtener el ID del arma de los kwargs
+        arma_id = kwargs.get('pk')
+        
+        # Buscar el vehículo en la base de datos
+        try:
+            arma = Armamento.objects.get(pk=arma_id)
+        except Armamento.DoesNotExist:
+            return HttpResponse("El arma no existe", status=404)
+        
+        # Aquí puedes realizar cualquier otra lógica necesaria antes de renderizar el template
+        
+        # Definir el contexto con el vehículo
+        context = {'object': arma}
 
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        # Renderizar el template con el contexto y devolver la respuesta
+        return render(request, 'armamento/arma_confirm_delete.html', context)
+
+    def post(self, request, pk):
+        # Obtener el objeto Vehiculo
+        arma = Armamento.objects.get(pk=pk)
+
         # Cambiar el estado a 0 en lugar de eliminar
-        self.object.estatus = 0
-        self.object.save()
-        return super().delete(request, *args, **kwargs)
+        arma.estatus = 0
+        arma.save()
+
+        # Redireccionar a la lista de vehículos
+        return redirect('arma_list')
