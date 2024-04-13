@@ -60,8 +60,12 @@
             </div>
         </div>
         <div class="col-12 row">
-            <div class="row col-4">
+            <div class="row col-4" hidden>
                 {{ form.estatus|as_crispy_field }}
+            </div>
+            <div class="row col-4" hidden>
+                <input type="date" name="fecha_termina" id="id_fecha_termina" class="form-control"
+                    value="{{ form.fecha_termina.value|date:'Y-m-d' }}">
             </div>
         </div>
         <hr>

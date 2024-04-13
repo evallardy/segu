@@ -1,8 +1,14 @@
 {% extends "core/base.html" %}
 {% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
 {% block css %}
 <title>Asignaciones</title>
 {% endblock %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
 {% block contenido %}
     <h1>Listado de asignaciones</h1>
     <a class="btn btn-info" href="{% url 'asignacion_create' %}">Crear asiganción</a>
