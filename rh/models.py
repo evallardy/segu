@@ -10,7 +10,7 @@ class Empleado(models.Model,PermissionRequiredMixin):
     rfc = models.CharField('R.F.C.', max_length=18, null=True, blank=True)
     curp = models.CharField('CURP', max_length=18)
     genero = models.IntegerField('Género', choices=GENERO, default=1)
-    estatus = models.IntegerField('Estatus', choices=ESTATUS_BAJA_ACTIVO, default=1)
+    estatus = models.IntegerField('Estatus', choices=ESTATUS_EMPLEADO, default=2)
 
     class Meta:
         verbose_name = 'Empleado' 
@@ -20,7 +20,7 @@ class Empleado(models.Model,PermissionRequiredMixin):
         db_table = 'Empleado'
 
     def __str__(self):
-        return '%s %s, %s' % (self.paterno, self.materno, self.nomrbe)
+        return '%s %s, %s' % (self.paterno, self.materno, self.nombre)
 
 class Generales(models.Model,PermissionRequiredMixin):
     empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)

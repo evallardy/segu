@@ -25,6 +25,6 @@ class Vehiculo(models.Model):
         db_table = 'Vehiculo'
 
     def __str__(self):
-        return '%s %s %s %s' % (self.tipo, self.marca, self.modelo, self.placa)
+        return '%s %s %s %s' % (self.get_tipo_vehiculo_display, self.marca, self.modelo, self.placa)
 
 

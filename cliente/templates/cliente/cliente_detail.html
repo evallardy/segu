@@ -1,0 +1,72 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load custom_filters %}
+{% block css %}
+<title>Detalle cliente</title>
+{% endblock %}
+{% block contenido %}
+<h1>Detalle cliente</h1>
+<div class="container">
+    <div class="col-12 row">
+        <div class="col-4"><strong>{{ form.fisica_moral.label_tag }}</strong>
+            <input type="text" name="fisica_moral" id="id_fisica_moral" class="form-control"
+                readonly value="{{ form.fisica_moral.value|valor_persona }}">
+        </div>
+    </div>
+    <div class="col-12 row">
+        <div class="col-12 row" id="gpo_moral" 
+            {% if form.fisica_moral.value == "0" or form.fisica_moral.value == 0 %} hidden {% endif %}>
+            <div class="col-12"><strong>Razón social</strong> 
+                {{ form.razon }}
+            </div>
+        </div>
+        <div class="col-12 row" id="gpo_fisica" {% if form.fisica_moral.value == "1" or form.fisica_moral.value == 1 %} hidden {% endif %}>
+            <div class="col-4"><strong>Paterno</strong> 
+                {{ form.paterno }}
+            </div>
+            <div class="col-4"><strong>Materno</strong> 
+                {{ form.materno }}
+            </div>
+            <div class="col-4"><strong>Nombre</strong> 
+                {{ form.nombre }}
+            </div>
+        </div>
+    </div>
+    <div class="col-12 row">
+        <div class="col-4"><strong>{{ form.rfc.label_tag }}</strong> 
+            {{ form.rfc }}
+        </div>
+        <div class="col-4" id="gpo_curp"
+            {% if form.fisica_moral.value == "1" and form.fisica_moral.value == 1 %} 
+                hidden 
+            {% endif %}>
+            <strong>{{ form.curp.label_tag }}</strong> 
+            {{ form.curp }}
+        </div>
+    </div>
+    <div class="col-12 row">
+        <div class="col-12 row">
+            <div class="col-4"><strong>{{ form.fecha_alta.label_tag }}</strong>
+                <input type="date" name="fecha_alta" id="id_fecha_alta" class="form-control"
+                    readonly value='{{ form.initial.fecha_alta|date:"Y-m-d" }}'>
+            </div>
+            <div class="col-4"><strong>{{ form.fecha_baja.label_tag }}</strong>
+                <input type="date" name="fecha_baja" id="id_fecha_baja" class="form-control"
+                    readonly value='{{ form.initial.fecha_baja|date:"Y-m-d" }}'>
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-4"><strong>{{ form.estatus.label_tag }}</strong>
+                <input type="text" name="estatus" id="id_estatus" class="form-control"
+                    readonly value="{{ form.estatus.value|valor_estatus_cliente }}">
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row justify-content-center">
+        <a class="btn btn-info col-4 info1" href="{% url 'cliente_list' %}">
+            <img src="{% static 'core/img/regresar.svg' %}" alt="">
+        </a>
+    </div>
+</div>
+{% endblock %}

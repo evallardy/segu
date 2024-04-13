@@ -31,22 +31,38 @@ ESTADOS = (
     (32, 'Zacatecas'),
 )
 ESTATUS_ARMAMENTO = (
-    (0, 'Baja'),
-    (1, 'Sin Asignar'),
-    (2, 'Asignado'),
+    (0, 'Asignado'),
+    (1, 'Baja'),
+    (2, 'Sin Asignar'),
     (3, 'Taller'),
-    (4, 'Otro'),
+    (99, 'Otro'),
 )
 ESTATUS_BAJA_ACTIVO = (
     (0, 'Baja'),
     (1, 'Activo'),
 )
-ESTATUS_VEHICULO = (
+ESTATUS_EMPLEADO = (
+    (0, 'Asignado'),
+    (1, 'Baja'),
+    (2, 'Sin Asignar'),
+    (3, 'Suspendido'),
+    (99, 'Otro'),
+)
+ESTATUS_SERVICIO = (
     (0, 'Baja'),
-    (1, 'Sin Asignar'),
-    (2, 'Asignado'),
+    (1, 'Cancelado'),
+    (2, 'En curso'),
+    (3, 'En revisión'),
+    (4, 'Nuevo'),
+    (5, 'Suspendido'),
+    (6, 'Terminado'),
+)
+ESTATUS_VEHICULO = (
+    (0, 'Asignado'),
+    (1, 'Baja'),
+    (2, 'Sin Asignar'),
     (3, 'Taller'),
-    (4, 'Otro'),
+    (99, 'Otro'),
 )
 FAMILIAR = (
     (0, 'Conyuge'),
@@ -125,11 +141,6 @@ TIPO_ARMAMENTO = (
     (6, 'Revólver'),
     (99, 'Otro'),
 )
-TIPO_ASIGNACION = (
-    (1, 'Custodia'),
-    (2, 'Vigilancia'),
-    (99, 'Otro'),
-)
 TIPO_CALIBRE = (
     (1, '12 Gauge (Calibre 12)'),
     (2, '20 Gauge (Calibre 20)'),
@@ -155,9 +166,24 @@ TIPO_EMPLEADO = (
     (0, 'Interno'),
     (1, 'Externo'),
 )
+TIPO_PERSONA = (
+    (0, 'Física'),
+    (1, 'Moral'),
+)
 TIPO_REFERENCIA = (
     (0, 'Personal'),
     (1, 'Empresa'),
+)
+TIPO_SERVICIO = (
+    (0, 'Sin servicio'),
+    (1, 'Escolta mixta'),
+    (2, 'Escolta personal'),
+    (3, 'Escolta vehicular'),
+    (4, 'Monitoreo'),
+    (5, 'Seguridad en evento'),
+    (6, 'Traslado de valores'),
+    (7, 'Vigilancia en bienes muebles'),
+    (99, 'Otro'),
 )
 TIPO_VEHICULO = (
     (1, 'Autobús'),

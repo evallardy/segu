@@ -1,0 +1,55 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block css %}
+<title>Clientes</title>
+{% endblock %}
+{% block contenido %}
+    <h1>Listado de clientes</h1>
+    <a class="btn btn-info" href="{% url 'cliente_create' %}">Crear cliente</a>
+    {% if object_list %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Razón/cliente</th>
+                <th>RFC</th>
+                <th>Alta</th>
+                <th>Baja</th>
+                <th>Estatus</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in object_list %}
+            <tr>
+                <td>{{cliente.get_fisica_moral_display}}</td>
+                <td>
+                {% if cliente.get_fisica_moral_display == 'Moral' %}
+                    {{cliente.razon}}
+                {% else %}
+                    {{cliente.paterno}}
+                    {{cliente.materno|default_if_none:""}}, 
+                    {{cliente.nombre}}
+                {% endif %}
+                </td>
+                <td>{{cliente.rfc|default_if_none:""}}</td>
+                <td>{{cliente.fecha_alta|default_if_none:""}}</td>
+                <td>{{cliente.fecha_baja|default_if_none:""}}</td>
+                <td>{{cliente.get_estatus_display|default_if_none:""}}</td>
+                <td><a href="{% url 'cliente_update' cliente.pk %}">
+                    <img src="{% static 'core/img/editar.svg' %}" alt="">
+                </a></td>
+                <td><a href="{% url 'cliente_delete' cliente.pk %}">
+                    <img src="{% static 'core/img/eliminar.svg' %}" alt="">
+                </a></td>
+                <td><a href="{% url 'cliente_detail' cliente.pk %}">
+                    <img src="{% static 'core/img/consultar.svg' %}" alt="">
+                </a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>    
+    {% endif %}
+{% endblock %}

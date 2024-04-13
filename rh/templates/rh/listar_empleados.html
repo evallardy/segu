@@ -17,6 +17,10 @@
             <th>codigo</th>
             <th>Nombre</th>
             <th>CURP</th>
+            <th>Estatus</th>
+            <th></th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -25,6 +29,7 @@
             <td>{{empleado.codigo|default_if_none:""}}</td>
             <td>{{empleado.paterno}} {{empleado.materno|default_if_none:""}}, {{empleado.nombre}}</td>
             <td>{{empleado.curp}}</td>
+            <td>{{empleado.get_estatus_display}}</td>
             <td><a href="{% url 'modificar_empleado' empleado.pk %}">
                 <img src="{% static 'core/img/editar.svg' %}" alt="">
             </a></td>

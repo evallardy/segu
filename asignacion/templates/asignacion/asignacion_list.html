@@ -1,0 +1,53 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block css %}
+<title>Asignaciones</title>
+{% endblock %}
+{% block contenido %}
+    <h1>Listado de asignaciones</h1>
+    <a class="btn btn-info" href="{% url 'asignacion_create' %}">Crear asiganción</a>
+    {% if object_list %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Servicio</th>
+                <th>Detalle</th>
+                <th>Cobro</th>
+                <th>Inicia</th>
+                <th>Termina</th>
+                <th>Estatus</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asignacion in object_list %}
+            <tr>
+                <td>
+                {% if asignacion.get_servicio_display == 'Otro' %}
+                    {{asignacion.otro_servicio}}
+                {% else %}
+                    {{asignacion.get_servicio_display}}
+                {% endif %}
+                </td>
+                <td>{{asignacion.detalle|default_if_none:""}}</td>
+                <td>{{asignacion.cobro|default_if_none:0}}</td>
+                <td>{{asignacion.fecha_inicial|default_if_none:""}}</td>
+                <td>{{asignacion.fecha_termina|default_if_none:""}}</td>
+                <td>{{asignacion.get_estatus_display|default_if_none:""}}</td>
+                <td><a href="{% url 'asignacion_update' asignacion.id %}">
+                    <img src="{% static 'core/img/editar.svg' %}" alt="">
+                </a></td>
+                <td><a href="#">
+                    <img src="{% static 'core/img/eliminar.svg' %}" alt="">
+                </a></td>
+                <td><a href="#">
+                    <img src="{% static 'core/img/consultar.svg' %}" alt="">
+                </a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>    
+    {% endif %}
+{% endblock %}

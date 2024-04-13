@@ -1,0 +1,125 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% load crispy_forms_tags %}
+{% block css %}
+<title>{% if form.instance.pk %}Edita cliente{% else %}Crea cliente{% endif %}</title>
+{% endblock %}
+{% block contenido %}
+<form method="post">
+    {% csrf_token %}
+    <h1>{% if form.instance.pk %}Edita cliente{% else %}Crea cliente{% endif %}</h1>
+    <div class="container">
+        <div class="col-12 row">
+            <div class="col-4"><strong>{{ form.fisica_moral.label_tag }}</strong> {{ form.fisica_moral }}</div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-12 row" id="gpo_moral" 
+                {% if form.fisica_moral.value == "0" or form.fisica_moral.value == 0 %} 
+                    hidden 
+                {% endif %}>
+                <div class="col-12"><strong>Razón social</strong> 
+                    {{ form.razon }}
+                    <label class="label_errores">{{ form.errors.razon.0 }}</label>
+                </div>
+            </div>
+            <div class="col-12 row" id="gpo_fisica" {% if form.fisica_moral.value == "1" or form.fisica_moral.value == 1 %} hidden {% endif %}>
+                <div class="col-4"><strong>Paterno</strong> 
+                    {{ form.paterno }}
+                    <label class="label_errores">{{ form.errors.paterno.0 }}</label>
+                </div>
+                <div class="col-4"><strong>Materno</strong> 
+                    {{ form.materno }}
+                    <label class="label_errores">{{ form.errors.materno.0 }}</label>
+                </div>
+                <div class="col-4"><strong>Nombre</strong> 
+                    {{ form.nombre }}
+                    <label class="label_errores">{{ form.errors.nombre.0 }}</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-4"><strong>{{ form.rfc.label_tag }}</strong> 
+                {{ form.rfc }}
+                <label class="label_errores">{{ form.errors.rfc.0 }}</label>
+            </div>
+            <div class="col-4" id="gpo_curp"
+                {% if form.fisica_moral.value == "1" and form.fisica_moral.value == 1 %} 
+                    hidden 
+                {% endif %}>
+                <strong>{{ form.curp.label_tag }}</strong> 
+                {{ form.curp }}
+                <label class="label_errores">{{ form.errors.curp.0 }}</label>
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-12 row">
+                <div class="col-4"><strong>{{ form.fecha_alta.label_tag }}</strong>
+                    <input type="date" name="fecha_alta" id="id_fecha_alta" class="form-control"
+                        value='{{ form.initial.fecha_alta|date:"Y-m-d" }}'>
+                        <label class="label_errores">{{ form.errors.fecha_alta.0 }}</label>
+                </div>
+                <div class="col-4"><strong>{{ form.fecha_baja.label_tag }}</strong>
+                    <input type="date" name="fecha_baja" id="id_fecha_baja" class="form-control"
+                        value='{{ form.initial.fecha_baja|date:"Y-m-d" }}'>
+                </div>
+            </div>
+            <div class="col-12 row" 
+                {% if form.instance.pk %}
+                {% else %}
+                    hidden
+                {% endif %}>
+                <div class="col-4"><strong>{{ form.estatus.label_tag }}</strong> {{ form.estatus }}</div>
+                <div class="col-4">
+                    <input type="text" name="estatus_actual" id="id_estatus_actual" class="form-control"
+                        value='{{ estatus_actual }}' readonly hidden>
+                </div>
+            </div>
+        </div>
+        {% if form.instance.pk %}
+        <hr>
+        <div class="row justify-content-center">
+            <a class="btn btn-info col-1 fs-7" href="{% url 'domicilio_cliente' form.instance.pk %}" title="Domicilio">
+                <img src="{% static 'core/img/evento.svg' %}" alt="">
+            </a>
+            <a class="btn btn-info col-1 fs-7" href="#" title="Servicios">
+                <img src="{% static 'core/img/taller.svg' %}" alt="">
+            </a>
+        </div>
+        {% endif %}
+        <hr>
+        <div class="row justify-content-center">
+            <button class="btn btn-success col-4" type="submit">
+                <img src="{% static 'core/img/guardar.svg' %}" alt="">
+            </button>
+            <a class="btn btn-info col-4 info1" href="{% url 'cliente_list' %}">
+                <img src="{% static 'core/img/regresar.svg' %}" alt="">
+            </a>
+        </div>
+    </div>
+</form>
+{% endblock %}
+<script>
+    {% block docred %}
+    function valida_persona() {
+        var selectedText = $('#id_fisica_moral').find('option:selected').text();
+        if (selectedText == 'Física') {
+            $('#gpo_fisica').removeAttr('hidden');
+            $('#gpo_curp').removeAttr('hidden');
+            $('#gpo_moral').attr('hidden', 'hidden');
+            $('#id_razon').val('');
+        } else {
+            $('#gpo_moral').removeAttr('hidden');
+            $('#gpo_fisica').attr('hidden', 'hidden');
+            $('#gpo_curp').attr('hidden', 'hidden');
+            $('#id_paterno').val('');
+            $('#id_materno').val('');
+            $('#id_nombre').val('');
+        }
+    }
+    $('#id_fisica_moral').change(function () {
+        valida_persona();
+    });
+    {% endblock %}
+</script>

@@ -11,9 +11,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index, name='index'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('arma/', include('armamento.urls')),
+    path('cliente/', include('cliente.urls')),
     path('rh/', include('rh.urls')),
     path('vehiculo/', include('vehiculo.urls')),
-    path('arma/', include('armamento.urls')),
+    path('asignacion/', include('asignacion.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 #urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

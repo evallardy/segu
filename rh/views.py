@@ -14,7 +14,7 @@ class ListarEmpleadosView(ListView):
     context_object_name = 'empleados'
 
     def get_queryset(self):
-        return Empleado.objects.exclude(estatus=0)
+        return Empleado.objects.all()
 
 class CrearEmpleadoView(CreateView):
     model = Empleado
