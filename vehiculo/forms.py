@@ -24,7 +24,7 @@ class VehiculoForm(forms.ModelForm):
 
     def clean_anio(self):
         # Obtiene el valor del campo 'anio'
-        anio = self.cleaned_data.get('anio')
+        anio = int(self.cleaned_data.get('anio'))
 
         # Obtiene el año actual
         anio_actual = datetime.datetime.now().year

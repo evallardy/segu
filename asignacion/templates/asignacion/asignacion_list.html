@@ -10,7 +10,7 @@
 {{ form.media }}
 {% block contenido %}
     <h1>Listado de asignaciones</h1>
-    <a class="btn btn-info" href="{% url 'asignacion_create' %}">Crear asiganción</a>
+    <a class="btn btn-info" href="{% url 'asignacion_create' %}">Crear asignación</a>
     {% if object_list %}
     <table class="table table-striped">
         <thead>
@@ -37,19 +37,41 @@
                 {% endif %}
                 </td>
                 <td>{{asignacion.detalle|default_if_none:""}}</td>
-                <td>{{asignacion.cobro|default_if_none:0}}</td>
+                <td class="text-end">{{asignacion.cobro|default_if_none:0}}</td>
                 <td>{{asignacion.fecha_inicial|default_if_none:""}}</td>
                 <td>{{asignacion.fecha_termina|default_if_none:""}}</td>
                 <td>{{asignacion.get_estatus_display|default_if_none:""}}</td>
-                <td><a href="{% url 'asignacion_update' asignacion.id %}">
-                    <img src="{% static 'core/img/editar.svg' %}" alt="">
-                </a></td>
-                <td><a href="#">
-                    <img src="{% static 'core/img/eliminar.svg' %}" alt="">
-                </a></td>
-                <td><a href="#">
-                    <img src="{% static 'core/img/consultar.svg' %}" alt="">
-                </a></td>
+                <td>
+                    {% if asignacion.estatus == 2 or asignacion.estatus == 3 or asignacion.estatus == 4 %}
+                    <a href="{% url 'asignacion_update' asignacion.id %}">
+                        <img src="{% static 'core/img/editar.svg' %}" alt="">
+                    </a>
+                    {% endif %}
+                </td>
+                <td>{% if asignacion.estatus == 4 %}
+                        <a href="{% url 'asignacion_elimina' asignacion.id %}" title="Elimina asignación">
+                            <img src="{% static 'core/img/eliminar.svg' %}" alt="">
+                        </a>
+                    {% elif asignacion.estatus == 2 %}
+                        <a href="{% url 'asignacion_suspende' asignacion.id %}" title="Suspende asignación">
+                            <img src="{% static 'core/img/suspender.svg' %}" alt="">
+                        </a>
+                    {% elif asignacion.estatus == 5 %}
+                        <a href="#" title="Reactiva asignación">
+                            <img src="{% static 'core/img/reactivar.svg' %}" alt="">
+                        </a>
+                    {% endif %}
+                </td>
+                <td>{% if asignacion.estatus == 4 %}
+                        <a href="{% url 'asignacion_autoriza' asignacion.id %}" title="autoriza asignación">
+                            <img src="{% static 'core/img/autoriza.svg' %}" alt="">
+                        </a>
+                    {% elif asignacion.estatus == 2 or asignacion.estatus == 3 %}
+                        <a href="{% url 'asignacion_evento' asignacion.id %}" title="Bitácora asignación">
+                            <img src="{% static 'core/img/detalle.svg' %}" alt="">
+                        </a>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>

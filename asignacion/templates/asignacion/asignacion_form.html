@@ -4,13 +4,12 @@
 {% load bootstrap4 %}
 {% bootstrap_css %}
 {% block css %}
-<title>Asiganciones</title>
+<title>Asignaciones</title>
 {% endblock %}
 {% bootstrap_javascript jquery='full' %}
 {{ form.media }}
 {% block contenido %}
-    {{ form.errors }}
-    <h1>{% if form.intance.pk %}Edita{% else %}Crea{% endif %} asiganción</h1>
+    <h1>{{ forma }} asiganción {{ registro }}</h1>
     <form method="post" id="formaAsignacion">
         {% csrf_token %}
         <div class="row col-12">
@@ -142,7 +141,7 @@
             <button class="btn btn-success col-4" type="submit">
                 <img src="{% static 'core/img/guardar.svg' %}" alt="">
             </button>
-            <a class="btn btn-info col-4 info1" href="{% url 'asigancion_list' %}">
+            <a class="btn btn-info col-4 info1" href="{% url 'asignacion_list' %}">
                 <img src="{% static 'core/img/regresar.svg' %}" alt="">
             </a>
         </div>
@@ -436,49 +435,6 @@
             $('#id_otro_servicio').val('');
         }
     });
-    function validaAutorizacion() {
-        var cobroInput = document.getElementById("id_cobro");
-        var cobroValue = cobroInput.value;
-        var cleanedCobroValue = cobroValue.replace(/,/g, '');
-        cobroInput.value = cleanedCobroValue;
-        correcto = true;
-        var fechaInicialInput = document.getElementById('id_fecha_inicial');
-        var fechaInicialValue = fechaInicialInput.value;
-        if (fechaInicialValue === "") {
-            correcto = false;
-        }
-        var clienteSelect = document.getElementById('id_cliente');
-        if (clienteSelect.value === "") {
-            correcto = false;
-        }
-        var servicioSelect = document.getElementById('id_servicio');
-        if (servicioSelect.value === "99") {
-            var otroServicioText = document.getElementById('id_otro_servicio');
-            if (otroServicioText.value === "") {
-                correcto = false;
-            }
-        }
-        var cobroInput = document.getElementById('id_cobro');
-        if (cobroInput.value === "0") {
-            correcto = false;
-        }
-        var detalleTextarea = document.getElementById('id_detalle');
-        if (detalleTextarea.value === "") {
-            correcto = false;
-        }
-        if (document.getElementById('tablaEmpleadosAsignados').getElementsByTagName('tbody')[0].getElementsByTagName('tr').length < 1) {
-            correcto = false;
-        }
-/*        if (document.getElementById('tablaVehiculosAsignados').getElementsByTagName('tbody')[0].getElementsByTagName('tr').length < 1) {
-            correcto = false;
-        }
-*/
-        if (correcto) {
-
-        } else {
-
-        }
-    }
     $('#formaAsignacion').submit(function(event) {
         // Evitar el envío del formulario por defecto
         event.preventDefault();

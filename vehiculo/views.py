@@ -14,6 +14,10 @@ class VehiculoListView(ListView):
         queryset = Vehiculo.objects.exclude(estatus=0)
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['vehiculos_active'] = True
+        return context
 
 class VehiculoCreateView(CreateView):
     model = Vehiculo
@@ -33,7 +37,7 @@ class VehiculoCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-#        context['forma'] = 'Alta de empleado'
+        context['vehiculos_active'] = True
         return context
 
 class VehiculoDetailView(DetailView):
@@ -47,6 +51,7 @@ class VehiculoDetailView(DetailView):
         for field_name, field_value in context['object'].__dict__.items():
             if hasattr(field_value, 'field') and hasattr(field_value.field.widget, 'attrs'):
                 field_value.field.widget.attrs['class'] = 'form-control'
+        context['vehiculos_active'] = True
         return context
 
 class VehiculoUpdateView(UpdateView):
@@ -59,6 +64,11 @@ class VehiculoUpdateView(UpdateView):
         form.fields['fecha_alta'].initial = self.object.fecha_alta
         form.fields['fecha_baja'].initial = self.object.fecha_baja
         return form    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['vehiculos_active'] = True
+        return context
 
 class VehiculoBajaView(View):
     model = Vehiculo
@@ -78,7 +88,7 @@ class VehiculoBajaView(View):
         # Aquí puedes realizar cualquier otra lógica necesaria antes de renderizar el template
         
         # Definir el contexto con el vehículo
-        context = {'object': vehiculo}
+        context = {'object': vehiculo, 'vehiculos_active': True}
 
         # Renderizar el template con el contexto y devolver la respuesta
         return render(request, 'vehiculo/vehiculo_confirm_delete.html', context)

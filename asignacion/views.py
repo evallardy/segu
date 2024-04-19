@@ -1,15 +1,16 @@
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, FormView, View
 import json
 
-from .models import Asignacion
+from .models import Asignacion, EventoAsignacion
 from .forms import AsignacionForm
 from vehiculo.models import Vehiculo
 from rh.models import Empleado
+from core.contantes import TIPO_EVENTO_ASIGANCION
 
-class AsigancionListView(ListView):
+class AsignacionListView(ListView):
     model = Asignacion
     template_name = 'asignacion/asignacion_list.html'
 
@@ -22,6 +23,7 @@ class AsigancionListView(ListView):
         context = super().get_context_data(**kwargs)
         context['vehiculos_libres'] = Vehiculo.objects.filter(estatus=2)
         context['empleados_libres'] = Empleado.objects.filter(estatus=2)
+        context['asignaciones_active'] = True
         return context
 
 class AsignacionCreateView(CreateView):
@@ -35,6 +37,7 @@ class AsignacionCreateView(CreateView):
         context['forma'] = 'Crea'
         context['empleadosSinAsignacion'] = Empleado.objects.filter(estatus=2)
         context['vehiculosSinAsignacion'] = Vehiculo.objects.filter(estatus=2)
+        context['asignaciones_active'] = True
         return context
 
     def post(self, request, *args, **kwargs):
@@ -94,8 +97,34 @@ class AsignacionCreateView(CreateView):
         vehiculos_a_actualizar = Vehiculo.objects.filter(id__in=[vehiculo['id'] for vehiculo in vehiculos_asignados], estatus=2)
         vehiculos_a_actualizar.update(estatus=0)
 
-        return HttpResponseRedirect(reverse_lazy('asignacion_update', kwargs={'pk': asignacion.id}))
+        return HttpResponseRedirect(reverse_lazy('asignacion_list'))
 
+class AsignacionAutoriza(FormView):
+    model = Asignacion
+    form_class = AsignacionForm
+    template_name = 'asignacion/asignacion_autoriza.html'
+    success_url = reverse_lazy('asignacion_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['forma'] = 'autoriza'
+        pk = self.kwargs['pk']
+        asignacion = Asignacion.objects.filter(id=pk).first()
+        context['asignacion'] = asignacion
+        context['asignaciones_active'] = True
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # Obtener el ID de la asignación desde el POST
+        id_asignacion = self.kwargs['pk']  # Suponiendo que estás usando Django
+
+        # Obtener la asignación correspondiente
+        asignacion = Asignacion.objects.get(pk=id_asignacion)
+
+        asignacion.estatus = 2
+        asignacion.save()
+
+        return HttpResponseRedirect(reverse_lazy('asignacion_list'))        
 
 def asignar_empleado(request):
     if request.method == 'POST' and request.is_ajax():
@@ -117,39 +146,29 @@ class AsignacionUpdateView(UpdateView):
     success_url = reverse_lazy('asignacion_list')
 
     def get_object(self, queryset=None):
-        # Recuperar la instancia de Asignacion que se está actualizando
         return get_object_or_404(Asignacion, pk=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['forma'] = 'actualiza'
+        pk = self.kwargs['pk']  
+        context['registro'] = pk
+        context['forma'] = 'Modifica'
         context['empleadosSinAsignacion'] = Empleado.objects.filter(estatus=2)
         context['vehiculosSinAsignacion'] = Vehiculo.objects.filter(estatus=2)
+        context['asignaciones_active'] = True
         return context
 
     def post(self, request, *args, **kwargs):
-        # Obtener el ID de la asignación desde el POST
-        id_asignacion = self.kwargs['pk']  # Suponiendo que estás usando Django
-
-        # Obtener la asignación correspondiente
+        id_asignacion = self.kwargs['pk']  
         asignacion = Asignacion.objects.get(pk=id_asignacion)
-
-        # Obtener los empleados asociados a esa asignación
         empleados_asignados = asignacion.empleados.all()
-
-        # Iterar sobre los empleados asignados y actualizar su estatus
         for empleado_act in empleados_asignados:
             empleado_act.estatus = 2
             empleado_act.save()
-
         vehiculos_asignados = asignacion.vehiculos.all()
-
-        # Iterar sobre los empleados asignados y actualizar su estatus
         for vehiculo_act in vehiculos_asignados:
             vehiculo_act.estatus = 2
             vehiculo_act.save()
-
-        # Recuperar los datos del POST
         cliente_id = request.POST.get('cliente')
         servicio = request.POST.get('servicio')
         otro_servicio = request.POST.get('otro_servicio')
@@ -160,11 +179,9 @@ class AsignacionUpdateView(UpdateView):
         estatus = request.POST.get('estatus')
         empleados_asignados_json = request.POST.get('empleados_asignados')
         vehiculos_asignados_json = request.POST.get('vehiculos_asignados')
-
         # Convertir los datos JSON a objetos Python
         empleados_asignados = json.loads(empleados_asignados_json)
         vehiculos_asignados = json.loads(vehiculos_asignados_json)
-
         # Crear una nueva instancia de Asignacion
         if fecha_termina:
             Asignacion.objects.filter(id=id_asignacion).update(
@@ -188,9 +205,6 @@ class AsignacionUpdateView(UpdateView):
                 estatus=estatus
             )
             
-        # Guardar la nueva asignación en la base de datos
-#        asignacion.save()
-
         # Asignar empleados y vehículos a la asignación
         asignacion.empleados.set([empleado['id'] for empleado in empleados_asignados])
         asignacion.vehiculos.set([vehiculo['id'] for vehiculo in vehiculos_asignados])
@@ -210,3 +224,69 @@ class AsignacionDeleteView(DeleteView):
     model = Asignacion
     template_name = 'asignacion/asignacion_confirm_delete.html'
     success_url = reverse_lazy('asignacion_list')
+
+    def post(self, request, *args, **kwargs):
+        id_asignacion = self.kwargs['pk']  
+        asignacion = Asignacion.objects.get(pk=id_asignacion)
+        empleados_asignados = asignacion.empleados.all()
+        for empleado_act in empleados_asignados:
+            empleado_act.estatus = 2
+            empleado_act.save()
+        vehiculos_asignados = asignacion.vehiculos.all()
+        for vehiculo_act in vehiculos_asignados:
+            vehiculo_act.estatus = 2
+            vehiculo_act.save()
+        Asignacion.objects.filter(id=id_asignacion).update(estatus=1)
+
+        return HttpResponseRedirect(reverse_lazy('asignacion_list'))        
+
+class AsignacionSuspende(DeleteView):
+    model = Asignacion
+    template_name = 'asignacion/asignacion_suspende.html'
+    success_url = reverse_lazy('asignacion_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['asignaciones_active'] = True
+        return context
+
+    def post(self, request, *args, **kwargs):
+        id_asignacion = self.kwargs['pk']  
+        motivo = request.POST['motivo']  
+        evento_asignacion = EventoAsignacion(
+            asignacion_id=id_asignacion,
+            tipo=0,
+            descripcion=motivo,
+            estatus=2,
+        )
+        evento_asignacion.save()
+
+
+        Asignacion.objects.filter(id=id_asignacion).update(estatus=1)
+
+        return HttpResponseRedirect(reverse_lazy('asignacion_list'))        
+
+
+class AsignacionEvento(DeleteView):
+    model = Asignacion
+    template_name = 'asignacion/asignacion_evento.html'
+    success_url = reverse_lazy('asignacion_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tipo_evento_asignacion'] = TIPO_EVENTO_ASIGANCION
+        context['asignaciones_active'] = True
+        return context
+
+    def post(self, request, *args, **kwargs):
+        id_asignacion = self.kwargs['pk']
+        motivo = request.POST['motivo']
+        id_tipo_evento = request.POST['tipo_evento']
+        evento_asignacion = EventoAsignacion(
+            asignacion_id=id_asignacion,
+            tipo=id_tipo_evento,
+            descripcion=motivo,
+            estatus=2,
+        )
+        evento_asignacion.save()
+        return HttpResponseRedirect(reverse_lazy('asignacion_list'))        

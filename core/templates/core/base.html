@@ -44,11 +44,16 @@
       <div class="collapse navbar-collapse" id="menu-principal">
         <ul class="navbar-nav ml-auto">
           {% if user.is_authenticated %}
-          <li class="nav-item"><a href="{% url 'asigancion_list'%}" class="nav-link active">Asignaciones</a></li>
-          <li class="nav-item"><a href="{% url 'listar_empleados'%}" class="nav-link">Empleados</a></li>
-          <li class="nav-item"><a href="{% url 'vehiculo_list'%}" class="nav-link">Vehículos</a></li>
-          <li class="nav-item"><a href="{% url 'arma_list'%}" class="nav-link">Armamento</a></li>
-          <li class="nav-item"><a href="{% url 'cliente_list'%}" class="nav-link">Clientes</a></li>
+          <li class="nav-item"><a href="{% url 'asignacion_list'%}" class="nav-link
+            {% if asignaciones_active %} active {% endif %}" >Asignaciones</a></li>
+          <li class="nav-item"><a href="{% url 'listar_empleados'%}" class="nav-link
+            {% if empleados_active %}active{% endif %}" >Empleados</a></li>
+          <li class="nav-item"><a href="{% url 'vehiculo_list'%}" class="nav-link
+            {% if vehiculos_active %}active{% endif %}" >Vehículos</a></li>
+          <li class="nav-item"><a href="{% url 'arma_list'%}" class="nav-link
+            {% if armamento_active %}active{% endif %}" >Armamento</a></li>
+          <li class="nav-item"><a href="{% url 'cliente_list'%}" class="nav-link
+            {% if clientes_active %}active{% endif %}" >Clientes</a></li>
           <li class="nav-item"><a href="#" class="nav-link">{{ user.name }}</a></li>
           <li class="nav-item"><a href="{% url 'logout'%}" class="nav-link">Cerrar</a></li>
           {% else %}

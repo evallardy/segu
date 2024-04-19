@@ -4,17 +4,14 @@
 {% load bootstrap4 %}
 {% bootstrap_css %}
 {% block css %}
-<title>Eliminar</title>
+<title>Autorización</title>
 {% endblock %}
 {% bootstrap_javascript jquery='full' %}
 {{ form.media }}
 {% block contenido %}
-    <h1>Eliminar asignación</h1>
+    <h1>Autorización</h1>
     <form method="post" id="formaAsignacionAutorizacion">
         {% csrf_token %}
-        <div class="alert alert-warning text-center" role="alert">
-            Al eliminar la asignación se liberarán los recursos asignados y no se podrá volver a activar
-        </div>
         <div class="row col-12">
             <div class="col-6">
                 Cliente
@@ -124,7 +121,7 @@
         </div>
         <hr>
         <div class="row justify-content-center">
-            <button class="btn btn-success col-4" type="submit" title="Confirma eliminación asignación">
+            <button class="btn btn-success col-4" type="submit" title="Confirma autorización asignación">
                 <img src="{% static 'core/img/confirmar.svg' %}" alt="">
             </button>
             <a class="btn btn-danger col-4 info1" href="{% url 'asignacion_list' %}" title="Cancelar">

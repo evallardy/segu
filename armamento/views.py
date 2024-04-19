@@ -12,6 +12,11 @@ class ArmaListView(ListView):
         # Aquí defines tu lógica de filtrado específica
         queryset = Armamento.objects.exclude(estatus=0)
         return queryset
+ 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['armamento_active'] = True
+        return context
 
 class ArmaCreateView(CreateView):
     model = Armamento
@@ -31,12 +36,17 @@ class ArmaCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-#        context['forma'] = 'Alta de empleado'
+        context['armamento_active'] = True
         return context
 
 class ArmaDetailView(DetailView):
     model = Armamento
     template_name = 'armamento/arma_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['armamento_active'] = True
+        return context
 
 class ArmaUpdateView(UpdateView):
     model = Armamento
@@ -48,6 +58,11 @@ class ArmaUpdateView(UpdateView):
         form.fields['fecha_alta'].initial = self.object.fecha_alta
         form.fields['fecha_baja'].initial = self.object.fecha_baja
         return form    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['armamento_active'] = True
+        return context
 
 class ArmaDeleteView(View):
     model = Armamento
@@ -67,7 +82,7 @@ class ArmaDeleteView(View):
         # Aquí puedes realizar cualquier otra lógica necesaria antes de renderizar el template
         
         # Definir el contexto con el vehículo
-        context = {'object': arma}
+        context = {'object': arma, 'armamento_active': True}
 
         # Renderizar el template con el contexto y devolver la respuesta
         return render(request, 'armamento/arma_confirm_delete.html', context)

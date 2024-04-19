@@ -48,6 +48,11 @@ ESTATUS_EMPLEADO = (
     (3, 'Suspendido'),
     (99, 'Otro'),
 )
+ESTATUS_EVENTO_ASIG = (
+    (0, 'Cancelado'),
+    (1, 'En curso'),
+    (2, 'Terminado'),
+)
 ESTATUS_SERVICIO = (
     (0, 'Baja'),
     (1, 'Cancelado'),
@@ -165,6 +170,12 @@ TIPO_COMBUSTIBLE = (
 TIPO_EMPLEADO = (
     (0, 'Interno'),
     (1, 'Externo'),
+)
+TIPO_EVENTO_ASIGANCION = (
+    (0, 'Suspensión'),
+    (1, 'Incidente'),
+    (2, 'Comentario'),
+    (3, 'Otro'),
 )
 TIPO_PERSONA = (
     (0, 'Física'),

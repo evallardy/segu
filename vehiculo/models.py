@@ -6,7 +6,7 @@ class Vehiculo(models.Model):
     marca = models.IntegerField('Marca', choices=MARCA_VEHICULO,default=1)
     otra_marca = models.CharField('Otra marca', max_length=100, blank=True, null=True)
     modelo = models.CharField('Modelo', max_length=100, blank=True, null=True)
-    anio = models.IntegerField('Año')
+    anio = models.CharField('Año', max_length=4)
     placa = models.CharField('Placa', max_length=10, unique=True, blank=True, null=True)
     color = models.CharField('Color', max_length=50)
     tipo_combustible = models.IntegerField('Combustible', choices=TIPO_COMBUSTIBLE, default=1)
@@ -16,7 +16,7 @@ class Vehiculo(models.Model):
     numero_serie = models.CharField('Número serie', max_length=50)
     fecha_alta = models.DateField('Alta')
     fecha_baja = models.DateField('Baja', blank=True, null=True)
-    estatus = models.IntegerField('Estatus', choices=ESTATUS_VEHICULO, default=1)
+    estatus = models.IntegerField('Estatus', choices=ESTATUS_VEHICULO, default=2)
 
     class Meta:
         verbose_name = 'Vehiculo'

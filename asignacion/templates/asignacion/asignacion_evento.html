@@ -4,22 +4,46 @@
 {% load bootstrap4 %}
 {% bootstrap_css %}
 {% block css %}
-<title>Eliminar</title>
+<title>Evento</title>
 {% endblock %}
 {% bootstrap_javascript jquery='full' %}
 {{ form.media }}
 {% block contenido %}
-    <h1>Eliminar asignación</h1>
-    <form method="post" id="formaAsignacionAutorizacion">
+<h1>Evento asignación {{ asignacion.id }}</h1>
+<form method="post" id="formaAsignacion">
+    <div class="row col-12">
         {% csrf_token %}
-        <div class="alert alert-warning text-center" role="alert">
-            Al eliminar la asignación se liberarán los recursos asignados y no se podrá volver a activar
+        <div class="row col-12">
+            <div class="col-6">
+            Tipo Evento
+                <select name="tipo_evento" id="id_tipo_evento" class="form-control text-bg-info">
+                    {% for valor, etiqueta in tipo_evento_asignacion %}
+                        {% if valor != 0 %}
+                            <option value="{{ valor }}">{{ etiqueta }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-3 text-center">
+                <br>
+                <a class="btn btn-info col-4 info1" href="" title="Bitácora">
+                    <img src="{% static 'core/img/detalle.svg' %}" alt="">
+                </a>
+            </div>
         </div>
+        <div class="row col-12">
+            <div class="col-12">
+                Reporte de la asigación ...
+                <textarea class="form-control text-bg-info" name="motivo" id="id_motivo" rows="5"></textarea>
+                <label class="label_errores" id="errorMotivo"></label>
+            </div>
+        </div>
+        <hr>
         <div class="row col-12">
             <div class="col-6">
                 Cliente
-                <input type="text" name="cliente" id="id_cliente" class="form-control"
-                    value="{{ asignacion.cliente }}" readonly>
+                <input type="text" name="cliente" id="id_cliente" class="form-control" value="{{ asignacion.cliente }}"
+                    readonly>
             </div>
             <div class="col-4">
                 Cobro
@@ -33,10 +57,8 @@
                 <input type="text" name="servicio" id="id_servicio" class="form-control"
                     value="{{ asignacion.get_servicio_display }}" readonly>
             </div>
-            <div class="col-6" id="gpo_otro_servicio"
-            {% if asignacion.servicio.value != "99" and asignacion.servicio.value != 99 %}
-            hidden
-            {% endif %}>
+            <div class="col-6" id="gpo_otro_servicio" 
+                {% if asignacion.servicio.value != "99" and asignacion.servicio.value != 99 %} hidden {% endif %}>
                 Otro servicio
                 <input type="text" name="otro_servicio" id="id_otro_servicio" class="form-control"
                     value="{{ asignacion.otro_servicio }}" readonly>
@@ -45,8 +67,8 @@
         <div class="col-12 row">
             <div class="col-12">
                 Detalle
-                <input type="text" name="detalle" id="id_detalle" class="form-control"
-                    value="{{ asignacion.detalle }}" readonly>
+                <input type="text" name="detalle" id="id_detalle" class="form-control" value="{{ asignacion.detalle }}"
+                    readonly>
             </div>
         </div>
         <div class="col-12 row">
@@ -68,6 +90,7 @@
                     value="{{ asignacion.get_estatus_display }}" readonly>
             </div>
         </div>
+        <br>
         <hr>
         <div class="row col-8">
             <table class="table table-striped" id="tablaEmpleadosAsignados">
@@ -124,12 +147,36 @@
         </div>
         <hr>
         <div class="row justify-content-center">
-            <button class="btn btn-success col-4" type="submit" title="Confirma eliminación asignación">
+            <button class="btn btn-success col-4" type="submit" title="Confirma suspención asignación">
                 <img src="{% static 'core/img/confirmar.svg' %}" alt="">
             </button>
             <a class="btn btn-danger col-4 info1" href="{% url 'asignacion_list' %}" title="Cancelar">
-                <img src="{% static 'core/img/cancelar.svg' %}" alt="" >
+                <img src="{% static 'core/img/cancelar.svg' %}" alt="">
             </a>
         </div>
-    </form>
+    </div>
+</form>
 {% endblock %}
+
+
+<script>
+    {% block docred %}
+    $('#formaAsignacion').submit(function (event) {
+        event.preventDefault();
+        correcto = true;
+        var motivo = document.getElementById("id_motivo");
+        if (motivo.value === "") {
+            document.getElementById('errorMotivo').innerText = 'Ingresa motivo.';
+            correcto = false;
+        } else {
+            document.getElementById('errorMotivo').innerText = '';
+        }
+
+        if (correcto) {
+            this.submit();
+        } else {
+            return false;
+        }
+    });
+    {% endblock %}
+</script>

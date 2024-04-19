@@ -16,6 +16,11 @@ class ListarEmpleadosView(ListView):
     def get_queryset(self):
         return Empleado.objects.all()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['empleados_active'] = True
+        return context
+
 class CrearEmpleadoView(CreateView):
     model = Empleado
     form_class = EmpleadoForm
@@ -35,6 +40,7 @@ class CrearEmpleadoView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['forma'] = 'Crea empleado'
+        context['empleados_active'] = True
         return context
 
 class ModificarEmpleadoView(UpdateView):
@@ -48,11 +54,12 @@ class ModificarEmpleadoView(UpdateView):
         context['forma'] = 'Edita empleado'
         pk = self.kwargs.get('pk',0)
         context['pk'] = pk
+        context['empleados_active'] = True
         return context
 
 def confirmar_eliminar(request, pk):
     empleado = get_object_or_404(Empleado, pk=pk)
-    return render(request, 'rh/confirmar_eliminar.html', {'empleado': empleado})
+    return render(request, 'rh/confirmar_eliminar.html', {'empleado': empleado, 'empleados_active': True})
 
 def eliminar_empleado(request, pk):
     empleado = get_object_or_404(Empleado, pk=pk)
@@ -60,12 +67,12 @@ def eliminar_empleado(request, pk):
         empleado.estatus = 0  # Cambiar el estado a 0 en lugar de eliminar
         empleado.save()
         return redirect('listar_empleados')
-    return redirect('confirmar_eliminar', pk=pk)
+    return redirect('confirmar_eliminar', pk=pk, empleados_active=True)
 
 def consulta_empleado(request, pk):
     empleado = get_object_or_404(Empleado, pk=pk)
     if empleado:
-        return render(request, 'rh/consulta_empleado.html', {'empleado': empleado})
+        return render(request, 'rh/consulta_empleado.html', {'empleado': empleado, 'empleados_active': True})
     else:
         return redirect('listar_empleados')
 
@@ -80,11 +87,11 @@ class Domicilio_empleado(TemplateView):
         nombre = empleado.paterno + ' ' + empleado.materno + ', ' + empleado.nombre
         if datos:
             if datos.domicilio:
-                return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 'estados': ESTADOS})
+                return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 'estados': ESTADOS, 'empleados_active': True})
             else:
-                return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'estados': ESTADOS})    
+                return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'estados': ESTADOS, 'empleados_active': True})    
         else:
-            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'estados': ESTADOS})
+            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'estados': ESTADOS, 'empleados_active': True})
 
     def post(self, request, *args, **kwargs):
         # Lógica para manejar solicitudes POST
@@ -126,11 +133,11 @@ class Beneficiario_empleado(TemplateView):
         nombre = empleado.paterno + ' ' + empleado.materno + ', ' + empleado.nombre
         if datos:
             if datos.beneficiario:
-                return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 'familiar': FAMILIAR})
+                return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 'familiar': FAMILIAR, 'empleados_active': True})
             else:
-                return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'familiar': FAMILIAR})    
+                return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'familiar': FAMILIAR, 'empleados_active': True})    
         else:
-            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'familiar': FAMILIAR})
+            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'familiar': FAMILIAR, 'empleados_active': True})
 
     def post(self, request, *args, **kwargs):
         # Lógica para manejar solicitudes POST
@@ -189,13 +196,13 @@ class Escolaridad_empleado(TemplateView):
         if datos:
             if datos.escolaridad:
                 return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 
-                    'escolaridad': ESCOLARIDAD, 'si_no': SI_NO})
+                    'escolaridad': ESCOLARIDAD, 'si_no': SI_NO, 'empleados_active': True})
             else:
                 return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'escolaridad': ESCOLARIDAD,
-                     'si_no': SI_NO})    
+                     'si_no': SI_NO, 'empleados_active': True})    
         else:
             return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'escolaridad': ESCOLARIDAD,
-                 'si_no': SI_NO})
+                 'si_no': SI_NO, 'empleados_active': True})
 
     def post(self, request, *args, **kwargs):
         # Lógica para manejar solicitudes POST
@@ -254,11 +261,11 @@ class Experiencia_empleado(TemplateView):
         nombre = empleado.paterno + ' ' + empleado.materno + ', ' + empleado.nombre
         if datos:
             if datos.experiencia:
-                return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre})
+                return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 'empleados_active': True})
             else:
-                return render(request, self.template_name, {'pk': pk, 'nombre': nombre})    
+                return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'empleados_active': True})    
         else:
-            return render(request, self.template_name, {'pk': pk, 'nombre': nombre})
+            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'empleados_active': True})
 
     def post(self, request, *args, **kwargs):
         # Lógica para manejar solicitudes POST
@@ -317,11 +324,14 @@ class Familia_empleado(TemplateView):
         nombre = empleado.paterno + ' ' + empleado.materno + ', ' + empleado.nombre
         if datos:
             if datos.familia:
-                return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 'familiar': FAMILIAR, 'si_no': SI_NO})
+                return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 
+                    'familiar': FAMILIAR, 'si_no': SI_NO, 'empleados_active': True})
             else:
-                return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'familiar': FAMILIAR, 'si_no': SI_NO})    
+                return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 
+                    'familiar': FAMILIAR, 'si_no': SI_NO, 'empleados_active': True})    
         else:
-            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'familiar': FAMILIAR, 'si_no': SI_NO})
+            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 
+                'familiar': FAMILIAR, 'si_no': SI_NO, 'empleados_active': True})
 
     def post(self, request, *args, **kwargs):
         # Lógica para manejar solicitudes POST
@@ -378,11 +388,14 @@ class Idioma_empleado(TemplateView):
         nombre = empleado.paterno + ' ' + empleado.materno + ', ' + empleado.nombre
         if datos:
             if datos.idioma:
-                return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 'idioma': IDIOMA})
+                return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 
+                    'idioma': IDIOMA, 'empleados_active': True})
             else:
-                return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'idioma': IDIOMA})    
+                return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 
+                    'idioma': IDIOMA, 'empleados_active': True})    
         else:
-            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'idioma': IDIOMA})
+            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 
+                'idioma': IDIOMA, 'empleados_active': True})
 
     def post(self, request, *args, **kwargs):
         # Lógica para manejar solicitudes POST
@@ -437,11 +450,14 @@ class Referencia_empleado(TemplateView):
         nombre = empleado.paterno + ' ' + empleado.materno + ', ' + empleado.nombre
         if datos:
             if datos.referencia:
-                return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 'tipo_referencia': TIPO_REFERENCIA})
+                return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 
+                    'tipo_referencia': TIPO_REFERENCIA, 'empleados_active': True})
             else:
-                return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'tipo_referencia': TIPO_REFERENCIA})    
+                return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 
+                    'tipo_referencia': TIPO_REFERENCIA, 'empleados_active': True})    
         else:
-            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'tipo_referencia': TIPO_REFERENCIA})
+            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 
+                'tipo_referencia': TIPO_REFERENCIA, 'empleados_active': True})
 
     def post(self, request, *args, **kwargs):
         # Lógica para manejar solicitudes POST

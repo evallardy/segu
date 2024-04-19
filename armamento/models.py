@@ -13,7 +13,7 @@ class Armamento(models.Model):
     numero_serie = models.CharField(max_length=100)
     fecha_alta = models.DateField(auto_created=True)
     fecha_baja = models.DateField(blank=True, null=True)
-    estatus = models.IntegerField(choices=ESTATUS_ARMAMENTO, default=1)
+    estatus = models.IntegerField(choices=ESTATUS_ARMAMENTO, default=2)
 
     class Meta:
         verbose_name = 'Armamento'

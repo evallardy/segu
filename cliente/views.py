@@ -16,6 +16,11 @@ class ClienteListView(ListView):
         queryset = Cliente.objects.all()
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clientes_active'] = True
+        return context
+
 class ClienteDetailView(DetailView):
     model = Cliente
     template_name = 'cliente/cliente_detail.html'
@@ -30,7 +35,7 @@ class ClienteDetailView(DetailView):
         for field_name, field in form.fields.items():
             field.widget.attrs['readonly'] = True
 
-        context = {'form': form, 'object': cliente}
+        context = {'form': form, 'object': cliente, 'clientes_active': True}
         return render(request, self.template_name, context)
 
 class ClienteCreateView(CreateView):
@@ -54,6 +59,10 @@ class ClienteCreateView(CreateView):
         context['ventana'] = 'Crea'
         return context
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clientes_active'] = True
+        return context
 
 class ClienteUpdateView(UpdateView):
     model = Cliente
@@ -72,6 +81,11 @@ class ClienteUpdateView(UpdateView):
         context['ventana'] = 'Edita'
         context['estatus_actual'] = cliente.estatus
         return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clientes_active'] = True
+        return context
+
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -114,7 +128,7 @@ class ClienteDeleteView(DeleteView):
         for field_name, field in form.fields.items():
             field.widget.attrs['readonly'] = True
 
-        context = {'form': form, 'object': cliente}
+        context = {'form': form, 'object': cliente, 'clientes_active': True}
         return render(request, self.template_name, context)
 
     def post(self, request, pk):
@@ -144,9 +158,11 @@ class Domicilio_cliente(TemplateView):
             nombre = cliente.razon
         datos = cliente.domicilio
         if datos:
-            return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 'estados': ESTADOS})
+            return render(request, self.template_name, {'datos': datos, 'pk': pk, 'nombre': nombre, 
+                'estados': ESTADOS, 'clientes_active':True})
         else:
-            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 'estados': ESTADOS})    
+            return render(request, self.template_name, {'pk': pk, 'nombre': nombre, 
+                'estados': ESTADOS, 'clientes_active':True})    
 
     def post(self, request, *args, **kwargs):
         # Lógica para manejar solicitudes POST
