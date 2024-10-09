@@ -1,0 +1,36 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% block css %}
+<title>Mapa de Mi Localización</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: calc(100vh - 190px);
+        }
+    </style>
+{% endblock %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+{% block contenido %}
+    <h1>Ubicacion de empleados</h1>
+    <div id="map" class="col-12"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([{{ coordenadas.0.latitud }}, {{ coordenadas.0.longitud }}], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        {% for coordenada in coordenadas %}
+            // Crear marcador con ID único
+            var marker{{ forloop.counter }} = L.marker([{{ coordenada.latitud }}, {{ coordenada.longitud }}]).addTo(map)
+                .bindPopup('{{ coordenada.nombre }}')
+                .openPopup();
+        {% endfor %}
+    </script>
+{% endblock %}

@@ -291,16 +291,16 @@
 
             filaClonada.children[0].style.display = 'none';
 
-            // Agregar un botón de regreso en la fila clonada
-            var botonRegreso = document.createElement('button');
-            botonRegreso.setAttribute('type', 'button');
-            filaClonada.children[5].appendChild(botonRegreso);
+                // Agregar un botón de regreso en la fila clonada
+                var botonRegreso = document.createElement('button');
+                botonRegreso.setAttribute('type', 'button');
+                filaClonada.children[5].appendChild(botonRegreso);
 
-            // Determinar la tabla de destino y eliminar la fila de la tabla de origen
-            var destino;
-            if (origen === 'tablaEmpleadosDisponibles') {
-                destino = "tablaEmpleadosAsignados";
-                botonRegreso.setAttribute('class', 'btn btn-danger');
+                // Determinar la tabla de destino y eliminar la fila de la tabla de origen
+                var destino;
+                if (origen === 'tablaEmpleadosDisponibles') {
+                    destino = "tablaEmpleadosAsignados";
+                    botonRegreso.setAttribute('class', 'btn btn-danger');
                 botonRegreso.innerHTML = '<img src="{% static "core/img/eliminar.svg" %}" alt="">';
             } else {
                 destino = "tablaEmpleadosDisponibles";

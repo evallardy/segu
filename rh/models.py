@@ -12,6 +12,14 @@ class Empleado(models.Model,PermissionRequiredMixin):
     genero = models.IntegerField('Género', choices=GENERO, default=1)
     estatus = models.IntegerField('Estatus', choices=ESTATUS_EMPLEADO, default=2)
 
+    def get_nombre_completo(self):
+        nombre_completo = self.nombre
+        if self.paterno:
+            nombre_completo += ' ' + self.paterno
+        if self.materno:
+            nombre_completo += ' ' + self.materno
+        return nombre_completo
+
     class Meta:
         verbose_name = 'Empleado' 
         verbose_name_plural = 'Empleados' 
@@ -20,7 +28,20 @@ class Empleado(models.Model,PermissionRequiredMixin):
         db_table = 'Empleado'
 
     def __str__(self):
-        return '%s %s, %s' % (self.paterno, self.materno, self.nombre)
+        nombre_completo = ''
+        if self.paterno:
+            nombre_completo += self.paterno
+        if self.materno:
+            if nombre_completo:
+                nombre_completo += ' ' + self.materno
+            else:
+                nombre_completo += self.materno
+        if self.nombre:
+            if nombre_completo:
+                nombre_completo += ', ' + self.nombre
+            else:
+                nombre_completo += self.nombre
+        return nombre_completo
 
 class Generales(models.Model,PermissionRequiredMixin):
     empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
